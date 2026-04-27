@@ -783,28 +783,24 @@
         const effectiveDuration = s.duration / skillSpeedMult;
         s.progress += dt / effectiveDuration;
         if (s.progress >= 1) {
-          s.progress = 1;
-          const xpGain = def.baseXpPerCycle * xpMult;
-          s.xp += xpGain;
+    s.progress = 1;
 
-          // FAST LEVELING: always level on completion
-          const needed = 1 + Math.floor(s.level * 0.75);
-          if (s.xp >= needed) {
-            s.xp -= needed;
-            s.level++;
-            log(`Skill leveled: ${def.name} is now Lv ${s.level}.`);
-            if (s._row) {
-              spawnFloatingText(
-                "LEVEL UP!",
-                s._row.getBoundingClientRect(),
-                "#a855f7"
-              );
-            }
-          }
-          s.progress = 0;
-        }
-      }
-    });
+    // XP gain
+    const xpGain = def.baseXpPerCycle * xpMult;
+    s.xp += xpGain;
+
+    // Level up check
+    const needed = 1 + Math.floor(s.level * 0.75);
+    if (s.xp >= needed) {
+        s.xp -= needed;
+        s.level++;
+        spawnFloatingText("LEVEL UP!", s._row.getBoundingClientRect(), "#a855f7");
+    }
+
+    // Reset bar
+    s.progress = 0.0001;
+}
+
 
     jobDefs.forEach(def => {
       const j = state.jobs[def.id];
