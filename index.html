@@ -359,6 +359,9 @@
     <p style="font-size:0.8rem;color:var(--muted);margin-top:0;">
       Convert your gathered matter into <strong>Void Favor</strong>. Each offering strengthens the Void and boosts all your actions.
     </p>
+    <label style="font-size:0.8rem;display:block;margin-bottom:6px;">
+      <input type="checkbox" id="auto-void-toggle"> Auto‑Feed the Void
+    </label>
     <div id="void-actions"></div>
   </div>
 
@@ -406,7 +409,7 @@
       name: "Focus",
       desc: "Sharpen your mind. Increases all skill speeds slightly.",
       baseDuration: 4000,
-      baseXpPerCycle: 5, // FAST XP
+      baseXpPerCycle: 5,
       effectType: "globalSkillSpeed",
       effectPerLevel: 0.01
     },
@@ -415,7 +418,7 @@
       name: "Void Sensitivity",
       desc: "Learn to feel the pull of the Void. Unlocks void‑related work.",
       baseDuration: 5000,
-      baseXpPerCycle: 5, // FAST XP
+      baseXpPerCycle: 5,
       effectType: "voidAffinity",
       effectPerLevel: 0.02
     },
@@ -424,7 +427,7 @@
       name: "Meditation",
       desc: "Sit in stillness. Increases XP gain for all skills.",
       baseDuration: 6000,
-      baseXpPerCycle: 5, // FAST XP
+      baseXpPerCycle: 5,
       effectType: "xpBoost",
       effectPerLevel: 0.02
     }
@@ -471,7 +474,8 @@
     },
     saveBtn: document.getElementById("save-btn"),
     loadBtn: document.getElementById("load-btn"),
-    wipeBtn: document.getElementById("wipe-btn")
+    wipeBtn: document.getElementById("wipe-btn"),
+    autoVoidToggle: document.getElementById("auto-void-toggle")
   };
 
   function initState() {
@@ -598,7 +602,8 @@
 
     const btn = document.createElement("button");
     btn.className = "small-btn";
-    btn.textContent = type === "skill" ? "Train" : "Work";
+    btn.textContent = type === "skill" ? "Auto" : "Auto";
+    btn.disabled = true; // purely decorative now
 
     const info = document.createElement("div");
     info.className = "small-label";
@@ -615,22 +620,6 @@
     row._barLabel = barLabel;
     row._infoEl = info;
     row._btn = btn;
-
-    btn.addEventListener("click", () => {
-      if (type === "skill") {
-        const s = state.skills[def.id];
-        if (s.progress >= 1) return;
-        s.progress = 0.0001;
-      } else {
-        const j = state.jobs[def.id];
-        if (!jobIsUnlocked(def)) {
-          flashRow(row);
-          return;
-        }
-        if (j.progress >= 1) return;
-        j.progress = 0.0001;
-      }
-    });
 
     return row;
   }
@@ -770,8 +759,41 @@
     el.voidActions.appendChild(dustRow);
   }
 
+  function autoStartBars() {
+    // auto start all skills
+    Object.values(state.skills).forEach(s => {
+      if (s.progress === 0) s.progress = 0.0001;
+    });
+    // auto start all unlocked jobs
+    jobDefs.forEach(def => {
+      const j = state.jobs[def.id];
+      if (jobIsUnlocked(def) && j.progress === 0) {
+        j.progress = 0.0001;
+      }
+    });
+  }
+
+  function autoVoidRituals(dt) {
+    if (!state.unlocks.voidTab) return;
+    if (!el.autoVoidToggle.checked) return;
+    const rows = el.voidActions.querySelectorAll(".row");
+    rows.forEach(row => {
+      const ritual = row._ritual;
+      if (!ritual) return;
+      if (!ritual.active && state.dust >= 10) {
+        state.dust -= 10;
+        ritual.active = true;
+        ritual.progress = 0.0001;
+        ritual.barLabel.textContent = "Ritual...";
+      }
+    });
+  }
+
   function tick(dt) {
     state.time += dt;
+
+    autoStartBars();
+    autoVoidRituals(dt);
 
     const skillSpeedMult = getSkillSpeedMultiplier();
     const jobSpeedMult = getJobSpeedMultiplier();
@@ -783,24 +805,23 @@
         const effectiveDuration = s.duration / skillSpeedMult;
         s.progress += dt / effectiveDuration;
         if (s.progress >= 1) {
-    s.progress = 1;
+          s.progress = 1;
+          const xpGain = def.baseXpPerCycle * xpMult;
+          s.xp += xpGain;
 
-    // XP gain
-    const xpGain = def.baseXpPerCycle * xpMult;
-    s.xp += xpGain;
-
-    // Level up check
-    const needed = 1 + Math.floor(s.level * 0.75);
-    if (s.xp >= needed) {
-        s.xp -= needed;
-        s.level++;
-        spawnFloatingText("LEVEL UP!", s._row.getBoundingClientRect(), "#a855f7");
-    }
-
-    // Reset bar
-    s.progress = 0.0001;
-}
-
+          const needed = 1 + Math.floor(s.level * 0.75);
+          if (s.xp >= needed) {
+            s.xp -= needed;
+            s.level++;
+            log(`Skill leveled: ${def.name} is now Lv ${s.level}.`);
+            if (s._row) {
+              spawnFloatingText("LEVEL UP!", s._row.getBoundingClientRect(), "#a855f7");
+            }
+          }
+          s.progress = 0.0001;
+        }
+      }
+    });
 
     jobDefs.forEach(def => {
       const j = state.jobs[def.id];
@@ -819,7 +840,7 @@
             spawnFloatingText("+" + reward.toFixed(0) + " Fragments", j._row.getBoundingClientRect());
           }
           j.level += 1;
-          j.progress = 0;
+          j.progress = 0.0001;
         }
       }
     });
@@ -881,7 +902,7 @@
       row._barFill.style.width = pct + "%";
       row._barLabel.textContent = pct > 0 ? Math.floor(pct) + "%" : (unlocked ? "Idle" : "Requires " + def.req.level + " " + skillDefs.find(s => s.id === def.req.skill).name);
       row._infoEl.textContent = unlocked ? ("Lv " + j.level) : "Locked";
-      row._btn.disabled = !unlocked;
+      row._btn.disabled = true;
     });
 
     if (state.unlocks.voidTab) {
@@ -923,19 +944,16 @@
           state.jobs[def.id] = { id: def.id, level: 0, progress: 0, duration: def.baseDuration };
         }
       });
-      // AUTO START SKILLS
-Object.values(state.skills).forEach(s => {
-    if (s.progress === 0) s.progress = 0.0001;
-});
-
-// AUTO START JOBS (only if unlocked)
-jobDefs.forEach(def => {
-    const j = state.jobs[def.id];
-    if (jobIsUnlocked(def) && j.progress === 0) {
-        j.progress = 0.0001;
-    }
-});
-
+      Object.values(state.skills).forEach(s => {
+        if (skillDefs.find(d => d.id === s.id)) {
+          s._row = null;
+        }
+      });
+      Object.values(state.jobs).forEach(j => {
+        if (jobDefs.find(d => d.id === j.id)) {
+          j._row = null;
+        }
+      });
       el.skillsContainer.innerHTML = "";
       el.jobsContainer.innerHTML = "";
       buildUI();
