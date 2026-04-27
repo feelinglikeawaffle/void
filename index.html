@@ -4,302 +4,1006 @@
 <meta charset="UTF-8">
 <title>Feeding the Void</title>
 <style>
-/* --- STYLES UNCHANGED FROM PREVIOUS VERSION (TRIMMED FOR BREVITY) --- */
-:root {
-  --bg: #050510;
-  --bg-alt: #0b0b1a;
-  --panel: #111122;
-  --accent: #8b5cf6;
-  --accent-soft: rgba(139,92,246,0.25);
-  --accent-strong: #a855f7;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
-  --danger: #f97373;
-  --bar-bg: #1f2933;
-  --bar-fill: linear-gradient(90deg,#8b5cf6,#ec4899);
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui;
-  background:radial-gradient(circle at top,#111827 0,#02010a 45%,#000 100%);
-  color:var(--text);
-}
-#app{max-width:1100px;margin:0 auto;padding:16px}
-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
-header h1{font-size:1.4rem;letter-spacing:.08em;text-transform:uppercase;margin:0;color:var(--accent-strong)}
-header .sub{font-size:.8rem;color:var(--muted)}
-#void-panel{
-  background:radial-gradient(circle at center,#111827 0,#02010a 60%);
-  border-radius:10px;padding:10px 14px;margin-bottom:10px;
-  border:1px solid rgba(148,163,184,0.25);
-  display:flex;justify-content:space-between;align-items:center;gap:12px;
-}
-#tabs{display:flex;gap:6px;margin-bottom:10px;border-bottom:1px solid rgba(148,163,184,0.25)}
-.tab-btn{padding:6px 10px;font-size:.8rem;border:none;border-radius:6px 6px 0 0;background:transparent;color:var(--muted);cursor:pointer}
-.tab-btn.active{background:var(--panel);color:var(--text);border:1px solid rgba(148,163,184,0.4);border-bottom:none}
-.tab-btn.locked{opacity:.4;cursor:default}
-.tab{display:none;background:var(--panel);border-radius:0 8px 8px 8px;border:1px solid rgba(148,163,184,0.4);padding:10px;min-height:260px}
-.tab.active{display:block}
-.section-title{font-size:.9rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px}
-.row{display:flex;align-items:center;gap:8px;padding:6px;background:rgba(15,23,42,0.7);border-radius:6px;margin-bottom:4px}
-.row-header{display:flex;justify-content:space-between;width:100%;font-size:.8rem;margin-bottom:2px}
-.row-name{font-weight:600}
-.row-meta{color:var(--muted);font-size:.75rem}
-.bar-container{position:relative;width:100%;height:14px;border-radius:999px;background:var(--bar-bg);overflow:hidden}
-.bar-fill{position:absolute;top:0;left:0;height:100%;width:0%;background-image:var(--bar-fill);transition:width .08s linear}
-.bar-label{position:absolute;width:100%;text-align:center;font-size:.7rem;color:#e5e7eb;mix-blend-mode:screen}
-.row-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:110px}
-.small-btn{padding:3px 7px;font-size:.7rem;border-radius:999px;border:1px solid rgba(148,163,184,0.6);background:rgba(15,23,42,0.9);color:var(--text);cursor:pointer}
-.small-btn:disabled{opacity:.4;cursor:default}
-.small-label{font-size:.7rem;color:var(--muted)}
-.floating-text{
-  position:fixed;pointer-events:none;font-size:.75rem;color:var(--accent-strong);
-  opacity:0;transform:translateY(0);
-  transition:transform .6s ease-out,opacity .6s ease-out;z-index:9999;
-}
+  :root {
+    --bg: #050510;
+    --bg-alt: #0b0b1a;
+    --panel: #111122;
+    --accent: #8b5cf6;
+    --accent-soft: rgba(139,92,246,0.25);
+    --accent-strong: #a855f7;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --danger: #f97373;
+    --bar-bg: #1f2933;
+    --bar-fill: linear-gradient(90deg,#8b5cf6,#ec4899);
+    --void: #111827;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #111827 0, #02010a 45%, #000 100%);
+    color: var(--text);
+  }
+
+  #app {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px 16px 32px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+  }
+
+  header h1 {
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--accent-strong);
+  }
+
+  header .sub {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  #void-panel {
+    background: radial-gradient(circle at center, #111827 0, #02010a 60%);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(148,163,184,0.25);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  #void-panel-left {
+    flex: 1;
+  }
+
+  #void-name {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  #void-favor {
+    font-size: 1.1rem;
+  }
+
+  #void-mult {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  #void-panel-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  #feed-void-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--accent);
+    background: rgba(15,23,42,0.9);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  #feed-void-btn:hover {
+    background: rgba(30,64,175,0.9);
+  }
+
+  #tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(148,163,184,0.25);
+  }
+
+  .tab-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    border: none;
+    border-radius: 6px 6px 0 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .tab-btn.active {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid rgba(148,163,184,0.4);
+    border-bottom: none;
+  }
+
+  .tab-btn.locked {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .tab {
+    display: none;
+    background: var(--panel);
+    border-radius: 0 8px 8px 8px;
+    border: 1px solid rgba(148,163,184,0.4);
+    padding: 10px;
+    min-height: 260px;
+  }
+
+  .tab.active {
+    display: block;
+  }
+
+  .section-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 6px;
+    border-radius: 6px;
+    background: rgba(15,23,42,0.7);
+    margin-bottom: 4px;
+  }
+
+  .row-header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+  }
+
+  .row-name {
+    font-weight: 600;
+  }
+
+  .row-meta {
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  .bar-container {
+    position: relative;
+    width: 100%;
+    height: 14px;
+    border-radius: 999px;
+    background: var(--bar-bg);
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background-image: var(--bar-fill);
+    transition: width 0.08s linear;
+  }
+
+  .bar-label {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 0.7rem;
+    color: #e5e7eb;
+    mix-blend-mode: screen;
+  }
+
+  .row-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    min-width: 110px;
+  }
+
+  .small-btn {
+    padding: 3px 7px;
+    font-size: 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148,163,184,0.6);
+    background: rgba(15,23,42,0.9);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .small-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .small-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  #log {
+    margin-top: 10px;
+    font-size: 0.7rem;
+    color: var(--muted);
+    max-height: 80px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  #log div {
+    opacity: 0.85;
+    margin-bottom: 2px;
+  }
+
+  #footer {
+    margin-top: 10px;
+    font-size: 0.7rem;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  #footer button {
+    padding: 3px 7px;
+    font-size: 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148,163,184,0.6);
+    background: rgba(15,23,42,0.9);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  #footer button:hover {
+    background: rgba(30,64,175,0.9);
+  }
+
+  .danger {
+    border-color: var(--danger) !important;
+    color: var(--danger) !important;
+  }
+
+  .floating-text {
+    position: fixed;
+    pointer-events: none;
+    font-size: 0.75rem;
+    color: var(--accent-strong);
+    opacity: 0;
+    transform: translateY(0);
+    transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+    z-index: 9999;
+  }
+
+  @media (max-width: 720px) {
+    #void-panel {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    #void-panel-right {
+      align-items: flex-start;
+    }
+    .row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .row-right {
+      align-items: flex-start;
+    }
+  }
 </style>
 </head>
 <body>
 <div id="app">
+  <header>
+    <div>
+      <h1>FEEDING THE VOID</h1>
+      <div class="sub">A tiny incremental about bars, entropy, and cosmic hunger.</div>
+    </div>
+    <div class="sub" id="time-display">t=0s</div>
+  </header>
 
-<header>
-  <div>
-    <h1>FEEDING THE VOID</h1>
-    <div class="sub">Fast‑leveling Progress Knight–style incremental.</div>
+  <div id="void-panel">
+    <div id="void-panel-left">
+      <div id="void-name">THE HUNGRY VOID</div>
+      <div id="void-favor">Void Favor: <span id="void-favor-value">0</span></div>
+      <div id="void-mult">Global Multiplier: <span id="void-mult-value">x1.00</span></div>
+    </div>
+    <div id="void-panel-right">
+      <button id="feed-void-btn">Feed the Void (Dust)</button>
+      <div style="font-size:0.75rem;color:var(--muted);">
+        Dust: <span id="dust-count">0</span> • Fragments: <span id="fragment-count">0</span>
+      </div>
+    </div>
   </div>
-  <div class="sub" id="time-display">t=0s</div>
-</header>
 
-<div id="void-panel">
-  <div>
-    <div style="font-size:.9rem;color:var(--muted)">THE HUNGRY VOID</div>
-    <div>Void Favor: <span id="void-favor-value">0</span></div>
-    <div style="font-size:.8rem;color:var(--muted)">Global Multiplier: <span id="void-mult-value">x1.00</span></div>
+  <div id="tabs">
+    <button class="tab-btn active" data-tab="skills">Skills</button>
+    <button class="tab-btn" data-tab="jobs">Jobs</button>
+    <button class="tab-btn locked" data-tab="void">Void</button>
+    <button class="tab-btn locked" data-tab="prestige">Collapse</button>
   </div>
-  <div>
-    <button id="feed-void-btn">Feed the Void (Dust)</button>
-    <div style="font-size:.75rem;color:var(--muted)">
-      Dust: <span id="dust-count">0</span> • Fragments: <span id="fragment-count">0</span>
+
+  <div id="tab-skills" class="tab active">
+    <div class="section-title">Training the Vessel</div>
+    <div id="skills-container"></div>
+  </div>
+
+  <div id="tab-jobs" class="tab">
+    <div class="section-title">Work for the Void</div>
+    <div id="jobs-container"></div>
+  </div>
+
+  <div id="tab-void" class="tab">
+    <div class="section-title">Feeding Rituals</div>
+    <p style="font-size:0.8rem;color:var(--muted);margin-top:0;">
+      Convert your gathered matter into <strong>Void Favor</strong>. Each offering strengthens the Void and boosts all your actions.
+    </p>
+    <div id="void-actions"></div>
+  </div>
+
+  <div id="tab-prestige" class="tab">
+    <div class="section-title">Collapse the Cycle</div>
+    <p style="font-size:0.8rem;color:var(--muted);margin-top:0;">
+      Collapse this reality, resetting most progress in exchange for permanent <strong>Void Gifts</strong>. (Prototype: not yet implemented.)
+    </p>
+  </div>
+
+  <div id="log"></div>
+
+  <div id="footer">
+    <div>Prototype build — single file, Progress‑Knight‑style bars, Void theme.</div>
+    <div>
+      <button id="save-btn">Save</button>
+      <button id="load-btn">Load</button>
+      <button id="wipe-btn" class="danger">Wipe Save</button>
     </div>
   </div>
 </div>
-
-<div id="tabs">
-  <button class="tab-btn active" data-tab="skills">Skills</button>
-  <button class="tab-btn" data-tab="jobs">Jobs</button>
-  <button class="tab-btn locked" data-tab="void">Void</button>
-  <button class="tab-btn locked" data-tab="prestige">Collapse</button>
-</div>
-
-<div id="tab-skills" class="tab active">
-  <div class="section-title">Training the Vessel</div>
-  <div id="skills-container"></div>
-</div>
-
-<div id="tab-jobs" class="tab">
-  <div class="section-title">Work for the Void</div>
-  <div id="jobs-container"></div>
-</div>
-
-<div id="tab-void" class="tab">
-  <div class="section-title">Feeding Rituals</div>
-  <div id="void-actions"></div>
-</div>
-
-<div id="tab-prestige" class="tab">
-  <div class="section-title">Collapse Reality</div>
-  <p style="font-size:.8rem;color:var(--muted)">Prestige not implemented yet.</p>
-</div>
-
-<div id="log"></div>
 
 <script>
-/* ============================================================
-   FAST‑LEVELING VERSION — Progress Knight style
-   ============================================================ */
+(function() {
+  const TICK_MS = 50;
+  const SAVE_KEY = "feeding_the_void_save_v1";
 
-const TICK = 50;
-let state = {
-  time: 0,
-  dust: 0,
-  fragments: 0,
-  voidFavor: 0,
-  skills: {},
-  jobs: {},
-  unlocks: { jobs: false, void: false }
-};
-
-/* ---------------- SKILL DEFINITIONS ---------------- */
-const skillDefs = [
-  { id:"focus", name:"Focus", baseDuration:2000, xpPer:5 },
-  { id:"voidsense", name:"Void Sensitivity", baseDuration:2500, xpPer:5 },
-  { id:"meditation", name:"Meditation", baseDuration:3000, xpPer:5 }
-];
-
-/* ---------------- JOB DEFINITIONS ---------------- */
-const jobDefs = [
-  { id:"dust", name:"Dust Gatherer", baseDuration:2500, reward:1, req:{skill:"focus",lvl:1} },
-  { id:"fragments", name:"Fragment Sifter", baseDuration:3500, reward:1, req:{skill:"voidsense",lvl:2} }
-];
-
-/* ---------------- INITIALIZE ---------------- */
-function init() {
-  skillDefs.forEach(s => state.skills[s.id] = { level:0, xp:0, progress:0 });
-  jobDefs.forEach(j => state.jobs[j.id] = { level:0, progress:0 });
-}
-init();
-
-/* ---------------- MULTIPLIERS ---------------- */
-function voidMult() { return 1 + state.voidFavor * 0.02 }
-
-/* ---------------- FLOATING TEXT ---------------- */
-function floatText(txt, rect, color="#a855f7") {
-  const el = document.createElement("div");
-  el.className = "floating-text";
-  el.textContent = txt;
-  el.style.left = rect.left + rect.width/2 + "px";
-  el.style.top = rect.top + rect.height/2 + "px";
-  el.style.color = color;
-  document.body.appendChild(el);
-  requestAnimationFrame(()=>{ el.style.opacity=1; el.style.transform="translateY(-20px)" });
-  setTimeout(()=>{ el.style.opacity=0; el.style.transform="translateY(-40px)" },400);
-  setTimeout(()=>el.remove(),800);
-}
-
-/* ---------------- UI BUILD ---------------- */
-const skillBox = document.getElementById("skills-container");
-const jobBox = document.getElementById("jobs-container");
-
-function makeRow(def, type) {
-  const row = document.createElement("div");
-  row.className = "row";
-  row.innerHTML = `
-    <div style="flex:1">
-      <div class="row-header">
-        <div class="row-name">${def.name}</div>
-        <div class="row-meta" id="${def.id}-meta">Lv 0</div>
-      </div>
-      <div style="font-size:.75rem;color:var(--muted)">${def.desc||""}</div>
-      <div class="bar-container">
-        <div class="bar-fill" id="${def.id}-fill"></div>
-        <div class="bar-label" id="${def.id}-label">Idle</div>
-      </div>
-    </div>
-    <div class="row-right">
-      <button class="small-btn" id="${def.id}-btn">${type==="skill"?"Train":"Work"}</button>
-      <div class="small-label" id="${def.id}-info"></div>
-    </div>
-  `;
-  return row;
-}
-
-skillDefs.forEach(def => skillBox.appendChild(makeRow(def,"skill")));
-jobDefs.forEach(def => jobBox.appendChild(makeRow(def,"job")));
-
-/* ---------------- GAME LOOP ---------------- */
-function tick(dt) {
-  state.time += dt;
-
-  /* ---- SKILLS ---- */
-  skillDefs.forEach(def=>{
-    const s = state.skills[def.id];
-    if (s.progress>0 && s.progress<1) {
-      s.progress += dt / def.baseDuration;
-      if (s.progress>=1) {
-        s.progress=1;
-        s.xp += def.xpPer;
-        s.level += 1;   // FAST LEVELING
-        floatText("LEVEL UP!", document.getElementById(def.id+"-fill").getBoundingClientRect());
-        s.progress=0;
-      }
+  let state = {
+    time: 0,
+    dust: 0,
+    fragments: 0,
+    voidFavor: 0,
+    skills: {},
+    jobs: {},
+    unlocks: {
+      jobsTab: false,
+      voidTab: false,
+      prestigeTab: false
     }
-  });
+  };
 
-  /* ---- JOBS ---- */
-  jobDefs.forEach(def=>{
-    const j = state.jobs[def.id];
-    const unlocked = state.skills[def.req.skill].level >= def.req.lvl;
-    if (!unlocked) return;
-
-    if (j.progress>0 && j.progress<1) {
-      j.progress += dt / def.baseDuration;
-      if (j.progress>=1) {
-        j.progress=1;
-        const gain = def.reward * voidMult();
-        if (def.id==="dust") state.dust += gain;
-        if (def.id==="fragments") state.fragments += gain;
-        floatText("+"+gain.toFixed(0), document.getElementById(def.id+"-fill").getBoundingClientRect());
-        j.level += 1;
-        j.progress=0;
-      }
+  const skillDefs = [
+    {
+      id: "focus",
+      name: "Focus",
+      desc: "Sharpen your mind. Increases all skill speeds slightly.",
+      baseDuration: 4000,
+      baseXpPerCycle: 5, // FAST XP
+      effectType: "globalSkillSpeed",
+      effectPerLevel: 0.01
+    },
+    {
+      id: "void_sense",
+      name: "Void Sensitivity",
+      desc: "Learn to feel the pull of the Void. Unlocks void‑related work.",
+      baseDuration: 5000,
+      baseXpPerCycle: 5, // FAST XP
+      effectType: "voidAffinity",
+      effectPerLevel: 0.02
+    },
+    {
+      id: "meditation",
+      name: "Meditation",
+      desc: "Sit in stillness. Increases XP gain for all skills.",
+      baseDuration: 6000,
+      baseXpPerCycle: 5, // FAST XP
+      effectType: "xpBoost",
+      effectPerLevel: 0.02
     }
-  });
+  ];
 
-  render();
-}
+  const jobDefs = [
+    {
+      id: "dust_gatherer",
+      name: "Dust Gatherer",
+      desc: "Collect cosmic dust drifting at the edge of the Void.",
+      baseDuration: 5000,
+      baseReward: 1,
+      resource: "dust",
+      req: { skill: "focus", level: 1 }
+    },
+    {
+      id: "fragment_sifter",
+      name: "Fragment Sifter",
+      desc: "Sort fragments of broken realities.",
+      baseDuration: 7000,
+      baseReward: 1,
+      resource: "fragments",
+      req: { skill: "void_sense", level: 2 }
+    }
+  ];
 
-/* ---------------- RENDER ---------------- */
-function render() {
-  document.getElementById("time-display").textContent = "t="+Math.floor(state.time/1000)+"s";
-  document.getElementById("dust-count").textContent = state.dust.toFixed(0);
-  document.getElementById("fragment-count").textContent = state.fragments.toFixed(0);
-  document.getElementById("void-favor-value").textContent = state.voidFavor.toFixed(0);
-  document.getElementById("void-mult-value").textContent = "x"+voidMult().toFixed(2);
-
-  skillDefs.forEach(def=>{
-    const s = state.skills[def.id];
-    document.getElementById(def.id+"-meta").textContent = "Lv "+s.level;
-    const pct = s.progress*100;
-    document.getElementById(def.id+"-fill").style.width = pct+"%";
-    document.getElementById(def.id+"-label").textContent = pct>0?Math.floor(pct)+"%":"Idle";
-    document.getElementById(def.id+"-info").textContent = "XP: "+s.xp;
-  });
-
-  jobDefs.forEach(def=>{
-    const j = state.jobs[def.id];
-    const unlocked = state.skills[def.req.skill].level >= def.req.lvl;
-    const pct = j.progress*100;
-    document.getElementById(def.id+"-fill").style.width = pct+"%";
-    document.getElementById(def.id+"-label").textContent = unlocked?(pct>0?Math.floor(pct)+"%":"Idle"):"Locked";
-    document.getElementById(def.id+"-meta").textContent = unlocked?"Lv "+j.level:"Locked";
-    document.getElementById(def.id+"-btn").disabled = !unlocked;
-  });
-}
-
-/* ---------------- BUTTONS ---------------- */
-skillDefs.forEach(def=>{
-  document.getElementById(def.id+"-btn").onclick = ()=>{
-    const s = state.skills[def.id];
-    if (s.progress===0) s.progress=0.0001;
+  const el = {
+    time: document.getElementById("time-display"),
+    dust: document.getElementById("dust-count"),
+    fragments: document.getElementById("fragment-count"),
+    voidFavor: document.getElementById("void-favor-value"),
+    voidMult: document.getElementById("void-mult-value"),
+    skillsContainer: document.getElementById("skills-container"),
+    jobsContainer: document.getElementById("jobs-container"),
+    voidActions: document.getElementById("void-actions"),
+    log: document.getElementById("log"),
+    feedVoidBtn: document.getElementById("feed-void-btn"),
+    tabs: document.querySelectorAll(".tab-btn"),
+    tabPanels: {
+      skills: document.getElementById("tab-skills"),
+      jobs: document.getElementById("tab-jobs"),
+      void: document.getElementById("tab-void"),
+      prestige: document.getElementById("tab-prestige")
+    },
+    saveBtn: document.getElementById("save-btn"),
+    loadBtn: document.getElementById("load-btn"),
+    wipeBtn: document.getElementById("wipe-btn")
   };
-});
 
-jobDefs.forEach(def=>{
-  document.getElementById(def.id+"-btn").onclick = ()=>{
-    const j = state.jobs[def.id];
-    const unlocked = state.skills[def.req.skill].level >= def.req.lvl;
-    if (!unlocked) return;
-    if (j.progress===0) j.progress=0.0001;
-  };
-});
+  function initState() {
+    skillDefs.forEach(def => {
+      state.skills[def.id] = {
+        id: def.id,
+        level: 0,
+        xp: 0,
+        progress: 0,
+        duration: def.baseDuration
+      };
+    });
+    jobDefs.forEach(def => {
+      state.jobs[def.id] = {
+        id: def.id,
+        level: 0,
+        progress: 0,
+        duration: def.baseDuration
+      };
+    });
+  }
 
-document.getElementById("feed-void-btn").onclick = ()=>{
-  state.dust += 1 * voidMult();
-  floatText("+1 Dust", document.getElementById("feed-void-btn").getBoundingClientRect());
-};
+  function getVoidMultiplier() {
+    return 1 + state.voidFavor * 0.02;
+  }
 
-/* ---------------- MAIN LOOP ---------------- */
-let last = performance.now();
-function loop(now){
-  const dt = now-last;
-  last = now;
-  tick(dt);
-  requestAnimationFrame(loop);
-}
-requestAnimationFrame(loop);
+  function getSkillSpeedMultiplier() {
+    let mult = 1;
+    const focus = state.skills["focus"];
+    if (focus) mult *= 1 + focus.level * 0.01;
+    return mult * getVoidMultiplier();
+  }
+
+  function getXpMultiplier() {
+    let mult = 1;
+    const med = state.skills["meditation"];
+    if (med) mult *= 1 + med.level * 0.02;
+    return mult * getVoidMultiplier();
+  }
+
+  function getJobSpeedMultiplier() {
+    let mult = 1;
+    const vs = state.skills["void_sense"];
+    if (vs) mult *= 1 + vs.level * 0.02;
+    return mult * getVoidMultiplier();
+  }
+
+  function log(msg) {
+    const line = document.createElement("div");
+    line.textContent = msg;
+    el.log.prepend(line);
+    const maxLines = 40;
+    while (el.log.children.length > maxLines) {
+      el.log.removeChild(el.log.lastChild);
+    }
+  }
+
+  function spawnFloatingText(text, rect, color) {
+    const elFt = document.createElement("div");
+    elFt.className = "floating-text";
+    elFt.textContent = text;
+    elFt.style.left = (rect.left + rect.width / 2) + "px";
+    elFt.style.top = (rect.top + rect.height / 2) + "px";
+    elFt.style.color = color || "var(--accent-strong)";
+    document.body.appendChild(elFt);
+    requestAnimationFrame(() => {
+      elFt.style.opacity = "1";
+      elFt.style.transform = "translateY(-18px)";
+    });
+    setTimeout(() => {
+      elFt.style.opacity = "0";
+      elFt.style.transform = "translateY(-32px)";
+      setTimeout(() => elFt.remove(), 400);
+    }, 400);
+  }
+
+  function createBarRow(def, type) {
+    const row = document.createElement("div");
+    row.className = "row";
+    row.dataset.id = def.id;
+    row.dataset.type = type;
+
+    const left = document.createElement("div");
+    left.style.flex = "1";
+
+    const header = document.createElement("div");
+    header.className = "row-header";
+
+    const name = document.createElement("div");
+    name.className = "row-name";
+    name.textContent = def.name;
+
+    const meta = document.createElement("div");
+    meta.className = "row-meta";
+    meta.textContent = "Lv 0";
+
+    header.appendChild(name);
+    header.appendChild(meta);
+
+    const desc = document.createElement("div");
+    desc.style.fontSize = "0.75rem";
+    desc.style.color = "var(--muted)";
+    desc.textContent = def.desc;
+
+    const barContainer = document.createElement("div");
+    barContainer.className = "bar-container";
+
+    const barFill = document.createElement("div");
+    barFill.className = "bar-fill";
+
+    const barLabel = document.createElement("div");
+    barLabel.className = "bar-label";
+    barLabel.textContent = "0%";
+
+    barContainer.appendChild(barFill);
+    barContainer.appendChild(barLabel);
+
+    left.appendChild(header);
+    left.appendChild(desc);
+    left.appendChild(barContainer);
+
+    const right = document.createElement("div");
+    right.className = "row-right";
+
+    const btn = document.createElement("button");
+    btn.className = "small-btn";
+    btn.textContent = type === "skill" ? "Train" : "Work";
+
+    const info = document.createElement("div");
+    info.className = "small-label";
+    info.textContent = type === "skill" ? "XP: 0" : "Lv 0";
+
+    right.appendChild(btn);
+    right.appendChild(info);
+
+    row.appendChild(left);
+    row.appendChild(right);
+
+    row._metaEl = meta;
+    row._barFill = barFill;
+    row._barLabel = barLabel;
+    row._infoEl = info;
+    row._btn = btn;
+
+    btn.addEventListener("click", () => {
+      if (type === "skill") {
+        const s = state.skills[def.id];
+        if (s.progress >= 1) return;
+        s.progress = 0.0001;
+      } else {
+        const j = state.jobs[def.id];
+        if (!jobIsUnlocked(def)) {
+          flashRow(row);
+          return;
+        }
+        if (j.progress >= 1) return;
+        j.progress = 0.0001;
+      }
+    });
+
+    return row;
+  }
+
+  function flashRow(row) {
+    row.style.boxShadow = "0 0 0 1px rgba(248,113,113,0.7)";
+    setTimeout(() => {
+      row.style.boxShadow = "none";
+    }, 250);
+  }
+
+  function jobIsUnlocked(def) {
+    const req = def.req;
+    if (!req) return true;
+    const s = state.skills[req.skill];
+    return s && s.level >= req.level;
+  }
+
+  function updateUnlocks() {
+    if (!state.unlocks.jobsTab && state.skills["focus"].level >= 1) {
+      state.unlocks.jobsTab = true;
+      unlockTab("jobs", "Jobs tab unlocked: you can now work for the Void.");
+    }
+    if (!state.unlocks.voidTab && state.dust >= 10) {
+      state.unlocks.voidTab = true;
+      unlockTab("void", "Void tab unlocked: perform feeding rituals.");
+      buildVoidActions();
+    }
+  }
+
+  function unlockTab(id, message) {
+    const btn = Array.from(el.tabs).find(b => b.dataset.tab === id);
+    if (btn) {
+      btn.classList.remove("locked");
+      log(message);
+    }
+  }
+
+  function buildUI() {
+    skillDefs.forEach(def => {
+      const row = createBarRow(def, "skill");
+      state.skills[def.id]._row = row;
+      el.skillsContainer.appendChild(row);
+    });
+
+    jobDefs.forEach(def => {
+      const row = createBarRow(def, "job");
+      state.jobs[def.id]._row = row;
+      el.jobsContainer.appendChild(row);
+    });
+  }
+
+  function buildVoidActions() {
+    el.voidActions.innerHTML = "";
+
+    const dustRow = document.createElement("div");
+    dustRow.className = "row";
+
+    const left = document.createElement("div");
+    left.style.flex = "1";
+
+    const header = document.createElement("div");
+    header.className = "row-header";
+
+    const name = document.createElement("div");
+    name.className = "row-name";
+    name.textContent = "Dust Offering";
+
+    const meta = document.createElement("div");
+    meta.className = "row-meta";
+    meta.textContent = "Consumes Dust → Void Favor";
+
+    header.appendChild(name);
+    header.appendChild(meta);
+
+    const desc = document.createElement("div");
+    desc.style.fontSize = "0.75rem";
+    desc.style.color = "var(--muted)";
+    desc.textContent = "Offer 10 Dust to slightly strengthen the Void.";
+
+    const barContainer = document.createElement("div");
+    barContainer.className = "bar-container";
+
+    const barFill = document.createElement("div");
+    barFill.className = "bar-fill";
+
+    const barLabel = document.createElement("div");
+    barLabel.className = "bar-label";
+    barLabel.textContent = "Idle";
+
+    barContainer.appendChild(barFill);
+    barContainer.appendChild(barLabel);
+
+    left.appendChild(header);
+    left.appendChild(desc);
+    left.appendChild(barContainer);
+
+    const right = document.createElement("div");
+    right.className = "row-right";
+
+    const btn = document.createElement("button");
+    btn.className = "small-btn";
+    btn.textContent = "Ritual";
+
+    const info = document.createElement("div");
+    info.className = "small-label";
+    info.textContent = "Cost: 10 Dust";
+
+    right.appendChild(btn);
+    right.appendChild(info);
+
+    dustRow.appendChild(left);
+    dustRow.appendChild(right);
+
+    const ritual = {
+      progress: 0,
+      duration: 3000,
+      active: false,
+      barFill,
+      barLabel
+    };
+
+    btn.addEventListener("click", () => {
+      if (ritual.active) return;
+      if (state.dust < 10) {
+        flashRow(dustRow);
+        return;
+      }
+      state.dust -= 10;
+      ritual.active = true;
+      ritual.progress = 0.0001;
+      barLabel.textContent = "Ritual...";
+      spawnFloatingText("-10 Dust", btn.getBoundingClientRect(), "#f97373");
+    });
+
+    dustRow._ritual = ritual;
+    el.voidActions.appendChild(dustRow);
+  }
+
+  function tick(dt) {
+    state.time += dt;
+
+    const skillSpeedMult = getSkillSpeedMultiplier();
+    const jobSpeedMult = getJobSpeedMultiplier();
+    const xpMult = getXpMultiplier();
+
+    skillDefs.forEach(def => {
+      const s = state.skills[def.id];
+      if (s.progress > 0 && s.progress < 1) {
+        const effectiveDuration = s.duration / skillSpeedMult;
+        s.progress += dt / effectiveDuration;
+        if (s.progress >= 1) {
+          s.progress = 1;
+          const xpGain = def.baseXpPerCycle * xpMult;
+          s.xp += xpGain;
+
+          // FAST LEVELING: always level on completion
+          const needed = 1;
+          if (s.xp >= needed) {
+            s.xp -= needed;
+            s.level++;
+            log(`Skill leveled: ${def.name} is now Lv ${s.level}.`);
+            if (s._row) {
+              spawnFloatingText(
+                "LEVEL UP!",
+                s._row.getBoundingClientRect(),
+                "#a855f7"
+              );
+            }
+          }
+          s.progress = 0;
+        }
+      }
+    });
+
+    jobDefs.forEach(def => {
+      const j = state.jobs[def.id];
+      if (j.progress > 0 && j.progress < 1) {
+        const effectiveDuration = j.duration / jobSpeedMult;
+        j.progress += dt / effectiveDuration;
+        if (j.progress >= 1) {
+          j.progress = 1;
+          const base = def.baseReward;
+          const reward = base * (1 + j.level * 0.5) * getVoidMultiplier();
+          if (def.resource === "dust") {
+            state.dust += reward;
+            spawnFloatingText("+" + reward.toFixed(0) + " Dust", j._row.getBoundingClientRect());
+          } else if (def.resource === "fragments") {
+            state.fragments += reward;
+            spawnFloatingText("+" + reward.toFixed(0) + " Fragments", j._row.getBoundingClientRect());
+          }
+          j.level += 1;
+          j.progress = 0;
+        }
+      }
+    });
+
+    if (state.unlocks.voidTab) {
+      const rows = el.voidActions.querySelectorAll(".row");
+      rows.forEach(row => {
+        const ritual = row._ritual;
+        if (!ritual) return;
+        if (ritual.active && ritual.progress < 1) {
+          const effectiveDuration = ritual.duration / getVoidMultiplier();
+          ritual.progress += dt / effectiveDuration;
+          if (ritual.progress >= 1) {
+            ritual.progress = 1;
+            ritual.active = false;
+            const favorGain = 1;
+            state.voidFavor += favorGain;
+            ritual.barLabel.textContent = "Complete";
+            spawnFloatingText("+1 Void Favor", row.getBoundingClientRect(), "#a855f7");
+            setTimeout(() => {
+              ritual.progress = 0;
+              ritual.barLabel.textContent = "Idle";
+            }, 200);
+          }
+        }
+      });
+    }
+
+    updateUnlocks();
+    render();
+  }
+
+  function render() {
+    el.time.textContent = "t=" + Math.floor(state.time / 1000) + "s";
+    el.dust.textContent = state.dust.toFixed(0);
+    el.fragments.textContent = state.fragments.toFixed(0);
+    el.voidFavor.textContent = state.voidFavor.toFixed(0);
+    el.voidMult.textContent = "x" + getVoidMultiplier().toFixed(2);
+
+    skillDefs.forEach(def => {
+      const s = state.skills[def.id];
+      const row = s._row;
+      if (!row) return;
+      row._metaEl.textContent = "Lv " + s.level;
+      const pct = Math.max(0, Math.min(1, s.progress)) * 100;
+      row._barFill.style.width = pct + "%";
+      row._barLabel.textContent = pct > 0 ? Math.floor(pct) + "%" : "Idle";
+      row._infoEl.textContent = "XP: " + s.xp.toFixed(1);
+    });
+
+    jobDefs.forEach(def => {
+      const j = state.jobs[def.id];
+      const row = j._row;
+      if (!row) return;
+      const unlocked = jobIsUnlocked(def);
+      row.style.opacity = unlocked ? "1" : "0.5";
+      row._metaEl.textContent = unlocked ? ("Lv " + j.level) : "Locked";
+      const pct = Math.max(0, Math.min(1, j.progress)) * 100;
+      row._barFill.style.width = pct + "%";
+      row._barLabel.textContent = pct > 0 ? Math.floor(pct) + "%" : (unlocked ? "Idle" : "Requires " + def.req.level + " " + skillDefs.find(s => s.id === def.req.skill).name);
+      row._infoEl.textContent = unlocked ? ("Lv " + j.level) : "Locked";
+      row._btn.disabled = !unlocked;
+    });
+
+    if (state.unlocks.voidTab) {
+      const rows = el.voidActions.querySelectorAll(".row");
+      rows.forEach(row => {
+        const ritual = row._ritual;
+        if (!ritual) return;
+        const pct = Math.max(0, Math.min(1, ritual.progress)) * 100;
+        ritual.barFill.style.width = pct + "%";
+        if (ritual.active) {
+          ritual.barLabel.textContent = Math.floor(pct) + "%";
+        }
+      });
+    }
+  }
+
+  function saveGame() {
+    const data = JSON.stringify(state);
+    localStorage.setItem(SAVE_KEY, data);
+    log("Game saved.");
+  }
+
+  function loadGame() {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) {
+      log("No save found.");
+      return;
+    }
+    try {
+      const loaded = JSON.parse(raw);
+      state = Object.assign({}, state, loaded);
+      skillDefs.forEach(def => {
+        if (!state.skills[def.id]) {
+          state.skills[def.id] = { id: def.id, level: 0, xp: 0, progress: 0, duration: def.baseDuration };
+        }
+      });
+      jobDefs.forEach(def => {
+        if (!state.jobs[def.id]) {
+          state.jobs[def.id] = { id: def.id, level: 0, progress: 0, duration: def.baseDuration };
+        }
+      });
+      Object.values(state.skills).forEach(s => {
+        if (skillDefs.find(d => d.id === s.id)) {
+          s._row = null;
+        }
+      });
+      Object.values(state.jobs).forEach(j => {
+        if (jobDefs.find(d => d.id === j.id)) {
+          j._row = null;
+        }
+      });
+      el.skillsContainer.innerHTML = "";
+      el.jobsContainer.innerHTML = "";
+      buildUI();
+      if (state.unlocks.voidTab) {
+        unlockTab("void");
+        buildVoidActions();
+      }
+      if (state.unlocks.jobsTab) {
+        unlockTab("jobs");
+      }
+      log("Game loaded.");
+    } catch (e) {
+      console.error(e);
+      log("Failed to load save.");
+    }
+  }
+
+  function wipeSave() {
+    localStorage.removeItem(SAVE_KEY);
+    location.reload();
+  }
+
+  function setupTabs() {
+    el.tabs.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.tab;
+        if (btn.classList.contains("locked")) return;
+        el.tabs.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        Object.keys(el.tabPanels).forEach(key => {
+          el.tabPanels[key].classList.remove("active");
+        });
+        el.tabPanels[id].classList.add("active");
+      });
+    });
+  }
+
+  function setupButtons() {
+    el.feedVoidBtn.addEventListener("click", () => {
+      state.dust += 1 * getVoidMultiplier();
+      spawnFloatingText("+1 Dust", el.feedVoidBtn.getBoundingClientRect());
+    });
+    el.saveBtn.addEventListener("click", saveGame);
+    el.loadBtn.addEventListener("click", loadGame);
+    el.wipeBtn.addEventListener("click", () => {
+      if (confirm("Wipe save and restart?")) wipeSave();
+    });
+  }
+
+  function startLoop() {
+    let last = performance.now();
+    function frame(now) {
+      const dt = now - last;
+      last = now;
+      tick(dt);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  initState();
+  buildUI();
+  setupTabs();
+  setupButtons();
+  loadGame();
+  startLoop();
+})();
 </script>
-
-</div>
 </body>
 </html>
