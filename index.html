@@ -788,7 +788,7 @@
           s.xp += xpGain;
 
           // FAST LEVELING: always level on completion
-          const needed = 1;
+          const needed = 1 + Math.floor(s.level * 0.75);
           if (s.xp >= needed) {
             s.xp -= needed;
             s.level++;
@@ -927,16 +927,19 @@
           state.jobs[def.id] = { id: def.id, level: 0, progress: 0, duration: def.baseDuration };
         }
       });
-      Object.values(state.skills).forEach(s => {
-        if (skillDefs.find(d => d.id === s.id)) {
-          s._row = null;
-        }
-      });
-      Object.values(state.jobs).forEach(j => {
-        if (jobDefs.find(d => d.id === j.id)) {
-          j._row = null;
-        }
-      });
+      // AUTO START SKILLS
+Object.values(state.skills).forEach(s => {
+    if (s.progress === 0) s.progress = 0.0001;
+});
+
+// AUTO START JOBS (only if unlocked)
+jobDefs.forEach(def => {
+    const j = state.jobs[def.id];
+    if (jobIsUnlocked(def) && j.progress === 0) {
+        j.progress = 0.0001;
+    }
+});
+
       el.skillsContainer.innerHTML = "";
       el.jobsContainer.innerHTML = "";
       buildUI();
