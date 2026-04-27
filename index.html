@@ -386,14 +386,14 @@
 
 <script>
 (function() {
-  const TICK_MS = 50;
-  const SAVE_KEY = "feeding_the_void_save_v1";
+  const SAVE_KEY = "feeding_the_void_save_v2";
 
   let state = {
     time: 0,
     dust: 0,
     fragments: 0,
     voidFavor: 0,
+    baseXpRate: 1, // base XP/sec that skills can modify
     skills: {},
     jobs: {},
     unlocks: {
@@ -407,10 +407,11 @@
     {
       id: "focus",
       name: "Focus",
-      desc: "Sharpen your mind. Increases all skill speeds slightly.",
+      desc: "Sharpen your mind. Slightly speeds up all skills.",
       baseDuration: 4000,
-      baseXpPerCycle: 5,
-      effectType: "globalSkillSpeed",
+      baseXpPerCycle: 3,
+      requires: null,
+      effectType: "skillSpeed",
       effectPerLevel: 0.01
     },
     {
@@ -418,8 +419,9 @@
       name: "Void Sensitivity",
       desc: "Learn to feel the pull of the Void. Unlocks void‑related work.",
       baseDuration: 5000,
-      baseXpPerCycle: 5,
-      effectType: "voidAffinity",
+      baseXpPerCycle: 3,
+      requires: { skill: "focus", level: 5 },
+      effectType: "jobSpeed",
       effectPerLevel: 0.02
     },
     {
@@ -427,9 +429,10 @@
       name: "Meditation",
       desc: "Sit in stillness. Increases XP gain for all skills.",
       baseDuration: 6000,
-      baseXpPerCycle: 5,
-      effectType: "xpBoost",
-      effectPerLevel: 0.02
+      baseXpPerCycle: 3,
+      requires: { skill: "void_sense", level: 10 },
+      effectType: "xpRate",
+      effectPerLevel: 0.05
     }
   ];
 
@@ -492,6 +495,7 @@
       state.jobs[def.id] = {
         id: def.id,
         level: 0,
+        xp: 0,
         progress: 0,
         duration: def.baseDuration
       };
@@ -509,17 +513,17 @@
     return mult * getVoidMultiplier();
   }
 
-  function getXpMultiplier() {
-    let mult = 1;
-    const med = state.skills["meditation"];
-    if (med) mult *= 1 + med.level * 0.02;
-    return mult * getVoidMultiplier();
-  }
-
   function getJobSpeedMultiplier() {
     let mult = 1;
     const vs = state.skills["void_sense"];
     if (vs) mult *= 1 + vs.level * 0.02;
+    return mult * getVoidMultiplier();
+  }
+
+  function getXpMultiplier() {
+    let mult = 1;
+    const med = state.skills["meditation"];
+    if (med) mult *= 1 + med.level * 0.05;
     return mult * getVoidMultiplier();
   }
 
@@ -550,6 +554,20 @@
       elFt.style.transform = "translateY(-32px)";
       setTimeout(() => elFt.remove(), 400);
     }, 400);
+  }
+
+  function skillUnlocked(def) {
+    if (!def.requires) return true;
+    const req = def.requires;
+    const s = state.skills[req.skill];
+    return s && s.level >= req.level;
+  }
+
+  function jobIsUnlocked(def) {
+    const req = def.req;
+    if (!req) return true;
+    const s = state.skills[req.skill];
+    return s && s.level >= req.level;
   }
 
   function createBarRow(def, type) {
@@ -602,8 +620,8 @@
 
     const btn = document.createElement("button");
     btn.className = "small-btn";
-    btn.textContent = type === "skill" ? "Auto" : "Auto";
-    btn.disabled = true; // purely decorative now
+    btn.textContent = "Auto";
+    btn.disabled = true;
 
     const info = document.createElement("div");
     info.className = "small-label";
@@ -629,13 +647,6 @@
     setTimeout(() => {
       row.style.boxShadow = "none";
     }, 250);
-  }
-
-  function jobIsUnlocked(def) {
-    const req = def.req;
-    if (!req) return true;
-    const s = state.skills[req.skill];
-    return s && s.level >= req.level;
   }
 
   function updateUnlocks() {
@@ -760,20 +771,22 @@
   }
 
   function autoStartBars() {
-    // auto start all skills
     Object.values(state.skills).forEach(s => {
+      const def = skillDefs.find(d => d.id === s.id);
+      if (!def) return;
+      if (!skillUnlocked(def)) return;
       if (s.progress === 0) s.progress = 0.0001;
     });
-    // auto start all unlocked jobs
+
     jobDefs.forEach(def => {
       const j = state.jobs[def.id];
-      if (jobIsUnlocked(def) && j.progress === 0) {
-        j.progress = 0.0001;
-      }
+      if (!j) return;
+      if (!jobIsUnlocked(def)) return;
+      if (j.progress === 0) j.progress = 0.0001;
     });
   }
 
-  function autoVoidRituals(dt) {
+  function autoVoidRituals() {
     if (!state.unlocks.voidTab) return;
     if (!el.autoVoidToggle.checked) return;
     const rows = el.voidActions.querySelectorAll(".row");
@@ -789,11 +802,27 @@
     });
   }
 
+  function xpNeededForLevel(level) {
+    return Math.floor(5 * Math.pow(1.15, level));
+  }
+
+  function applySkillEffects() {
+    state.baseXpRate = 1;
+    Object.values(state.skills).forEach(s => {
+      const def = skillDefs.find(d => d.id === s.id);
+      if (!def) return;
+      if (def.effectType === "xpRate") {
+        state.baseXpRate += def.effectPerLevel * s.level;
+      }
+    });
+  }
+
   function tick(dt) {
     state.time += dt;
 
     autoStartBars();
-    autoVoidRituals(dt);
+    autoVoidRituals();
+    applySkillEffects();
 
     const skillSpeedMult = getSkillSpeedMultiplier();
     const jobSpeedMult = getJobSpeedMultiplier();
@@ -801,15 +830,17 @@
 
     skillDefs.forEach(def => {
       const s = state.skills[def.id];
+      if (!s) return;
+      if (!skillUnlocked(def)) return;
       if (s.progress > 0 && s.progress < 1) {
         const effectiveDuration = s.duration / skillSpeedMult;
         s.progress += dt / effectiveDuration;
         if (s.progress >= 1) {
           s.progress = 1;
-          const xpGain = def.baseXpPerCycle * xpMult;
+          const xpGain = (def.baseXpPerCycle + state.baseXpRate) * xpMult;
           s.xp += xpGain;
 
-          const needed = 1 + Math.floor(s.level * 0.75);
+          const needed = xpNeededForLevel(s.level);
           if (s.xp >= needed) {
             s.xp -= needed;
             s.level++;
@@ -825,6 +856,8 @@
 
     jobDefs.forEach(def => {
       const j = state.jobs[def.id];
+      if (!j) return;
+      if (!jobIsUnlocked(def)) return;
       if (j.progress > 0 && j.progress < 1) {
         const effectiveDuration = j.duration / jobSpeedMult;
         j.progress += dt / effectiveDuration;
@@ -839,7 +872,15 @@
             state.fragments += reward;
             spawnFloatingText("+" + reward.toFixed(0) + " Fragments", j._row.getBoundingClientRect());
           }
-          j.level += 1;
+
+          const jobXpGain = 1 * getVoidMultiplier();
+          j.xp += jobXpGain;
+          const needed = xpNeededForLevel(j.level);
+          if (j.xp >= needed) {
+            j.xp -= needed;
+            j.level++;
+          }
+
           j.progress = 0.0001;
         }
       }
@@ -884,11 +925,18 @@
       const s = state.skills[def.id];
       const row = s._row;
       if (!row) return;
-      row._metaEl.textContent = "Lv " + s.level;
+      const unlocked = skillUnlocked(def);
+      row.style.opacity = unlocked ? "1" : "0.4";
+      row._metaEl.textContent = unlocked ? ("Lv " + s.level) : "Locked";
       const pct = Math.max(0, Math.min(1, s.progress)) * 100;
       row._barFill.style.width = pct + "%";
-      row._barLabel.textContent = pct > 0 ? Math.floor(pct) + "%" : "Idle";
-      row._infoEl.textContent = "XP: " + s.xp.toFixed(1);
+      row._barLabel.textContent = unlocked
+        ? (pct > 0 ? Math.floor(pct) + "%" : "Idle")
+        : ("Requires Lv " + def.requires.level + " " + skillDefs.find(d => d.id === def.requires.skill).name);
+      row._infoEl.textContent = unlocked
+        ? ("XP: " + s.xp.toFixed(1) + " / " + xpNeededForLevel(s.level))
+        : "Locked";
+      row._btn.disabled = true;
     });
 
     jobDefs.forEach(def => {
@@ -900,8 +948,12 @@
       row._metaEl.textContent = unlocked ? ("Lv " + j.level) : "Locked";
       const pct = Math.max(0, Math.min(1, j.progress)) * 100;
       row._barFill.style.width = pct + "%";
-      row._barLabel.textContent = pct > 0 ? Math.floor(pct) + "%" : (unlocked ? "Idle" : "Requires " + def.req.level + " " + skillDefs.find(s => s.id === def.req.skill).name);
-      row._infoEl.textContent = unlocked ? ("Lv " + j.level) : "Locked";
+      row._barLabel.textContent = unlocked
+        ? (pct > 0 ? Math.floor(pct) + "%" : "Idle")
+        : ("Requires Lv " + def.req.level + " " + skillDefs.find(s => s.id === def.req.skill).name);
+      row._infoEl.textContent = unlocked
+        ? ("XP: " + j.xp.toFixed(1) + " / " + xpNeededForLevel(j.level))
+        : "Locked";
       row._btn.disabled = true;
     });
 
@@ -941,19 +993,11 @@
       });
       jobDefs.forEach(def => {
         if (!state.jobs[def.id]) {
-          state.jobs[def.id] = { id: def.id, level: 0, progress: 0, duration: def.baseDuration };
+          state.jobs[def.id] = { id: def.id, level: 0, xp: 0, progress: 0, duration: def.baseDuration };
         }
       });
-      Object.values(state.skills).forEach(s => {
-        if (skillDefs.find(d => d.id === s.id)) {
-          s._row = null;
-        }
-      });
-      Object.values(state.jobs).forEach(j => {
-        if (jobDefs.find(d => d.id === j.id)) {
-          j._row = null;
-        }
-      });
+      Object.values(state.skills).forEach(s => { s._row = null; });
+      Object.values(state.jobs).forEach(j => { j._row = null; });
       el.skillsContainer.innerHTML = "";
       el.jobsContainer.innerHTML = "";
       buildUI();
