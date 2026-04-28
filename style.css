@@ -170,6 +170,30 @@ header .sub {
   color: var(--muted);
 }
 
+#log {
+  margin-top: 10px;
+  font-size: 0.7rem;
+  color: var(--muted);
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+#footer {
+  margin-top: 10px;
+  font-size: 0.7rem;
+  color: var(--muted);
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.danger {
+  color: var(--danger);
+}
+
 .floating-text {
   position: fixed;
   pointer-events: none;
