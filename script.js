@@ -77,16 +77,24 @@ const el = {
   jobs: document.getElementById("jobs-container"),
   voidActions: document.getElementById("void-actions"),
   autoVoid: document.getElementById("auto-void-toggle"),
-  log: document.getElementById("log")
+  log: document.getElementById("log"),
+  feedVoidBtn: document.getElementById("feed-void-btn"),
+  saveBtn: document.getElementById("save-btn"),
+  loadBtn: document.getElementById("load-btn"),
+  wipeBtn: document.getElementById("wipe-btn")
 };
 
 // INIT STATE
 function initState() {
   skillDefs.forEach(def => {
-    state.skills[def.id] = { level: 0, progress: 0 };
+    if (!state.skills[def.id]) {
+      state.skills[def.id] = { level: 0, progress: 0 };
+    }
   });
   jobDefs.forEach(def => {
-    state.jobs[def.id] = { level: 0, progress: 0 };
+    if (!state.jobs[def.id]) {
+      state.jobs[def.id] = { level: 0, progress: 0 };
+    }
   });
 }
 
@@ -94,12 +102,12 @@ function initState() {
 function skillUnlocked(def) {
   if (!def.requires) return true;
   const req = state.skills[def.requires.skill];
-  return req.level >= def.requires.level;
+  return req && req.level >= def.requires.level;
 }
 
 function jobUnlocked(def) {
   const req = state.skills[def.req.skill];
-  return req.level >= def.req.level;
+  return req && req.level >= def.req.level;
 }
 
 // VOID MULT
@@ -108,7 +116,7 @@ function getVoidMult() {
 }
 
 // BUILD UI ROW
-function createRow(def, type) {
+function createRow(def) {
   const row = document.createElement("div");
   row.className = "row";
 
@@ -171,26 +179,29 @@ function createRow(def, type) {
 
 // BUILD UI
 function buildUI() {
+  el.skills.innerHTML = "";
+  el.jobs.innerHTML = "";
+
   skillDefs.forEach(def => {
-    const row = createRow(def, "skill");
+    const row = createRow(def);
     state.skills[def.id]._row = row;
     el.skills.appendChild(row);
   });
 
   jobDefs.forEach(def => {
-    const row = createRow(def, "job");
+    const row = createRow(def);
     state.jobs[def.id]._row = row;
     el.jobs.appendChild(row);
   });
 }
 
 // FLOATING TEXT
-function floatText(text, rect, color="#a855f7") {
+function floatText(text, rect, color = "#a855f7") {
   const elFt = document.createElement("div");
   elFt.className = "floating-text";
   elFt.textContent = text;
-  elFt.style.left = rect.left + rect.width/2 + "px";
-  elFt.style.top = rect.top + rect.height/2 + "px";
+  elFt.style.left = rect.left + rect.width / 2 + "px";
+  elFt.style.top = rect.top + rect.height / 2 + "px";
   elFt.style.color = color;
   document.body.appendChild(elFt);
   requestAnimationFrame(() => {
@@ -200,11 +211,23 @@ function floatText(text, rect, color="#a855f7") {
   setTimeout(() => elFt.remove(), 600);
 }
 
+// UNLOCKS
+function updateUnlocks() {
+  if (!state.unlocks.jobs && state.skills.focus.level >= 1) {
+    state.unlocks.jobs = true;
+    document.querySelector('[data-tab="jobs"]').classList.remove("locked");
+  }
+  if (!state.unlocks.void && state.dust >= 10) {
+    state.unlocks.void = true;
+    document.querySelector('[data-tab="void"]').classList.remove("locked");
+  }
+}
+
 // TICK LOOP
 function tick(dt) {
   state.time += dt;
 
-  // AUTO START SKILLS
+  // SKILLS
   skillDefs.forEach(def => {
     const s = state.skills[def.id];
     if (!skillUnlocked(def)) return;
@@ -215,12 +238,12 @@ function tick(dt) {
 
     if (s.progress >= 1) {
       s.level++;
-      floatText("LEVEL UP!", s._row.getBoundingClientRect());
       s.progress = 0.0001;
+      if (s._row) floatText("LEVEL UP!", s._row.getBoundingClientRect());
     }
   });
 
-  // AUTO START JOBS
+  // JOBS
   jobDefs.forEach(def => {
     const j = state.jobs[def.id];
     if (!jobUnlocked(def)) return;
@@ -232,7 +255,7 @@ function tick(dt) {
     if (j.progress >= 1) {
       const reward = (1 + j.level * 0.5) * getVoidMult();
       state[def.resource] += reward;
-      floatText("+" + reward.toFixed(0) + " " + def.resource, j._row.getBoundingClientRect());
+      if (j._row) floatText("+" + reward.toFixed(0) + " " + def.resource, j._row.getBoundingClientRect());
       j.level++;
       j.progress = 0.0001;
     }
@@ -251,21 +274,9 @@ function tick(dt) {
   render();
 }
 
-// UNLOCKS
-function updateUnlocks() {
-  if (!state.unlocks.jobs && state.skills.focus.level >= 1) {
-    state.unlocks.jobs = true;
-    document.querySelector('[data-tab="jobs"]').classList.remove("locked");
-  }
-  if (!state.unlocks.void && state.dust >= 10) {
-    state.unlocks.void = true;
-    document.querySelector('[data-tab="void"]').classList.remove("locked");
-  }
-}
-
 // RENDER
 function render() {
-  el.time.textContent = "t=" + Math.floor(state.time/1000) + "s";
+  el.time.textContent = "t=" + Math.floor(state.time / 1000) + "s";
   el.dust.textContent = state.dust.toFixed(0);
   el.fragments.textContent = state.fragments.toFixed(0);
   el.voidFavor.textContent = state.voidFavor.toFixed(0);
@@ -274,23 +285,25 @@ function render() {
   skillDefs.forEach(def => {
     const s = state.skills[def.id];
     const row = s._row;
-    const pct = Math.min(1, s.progress) * 100;
+    const unlocked = skillUnlocked(def);
+    const pct = unlocked ? Math.min(1, s.progress) * 100 : 0;
     row._fill.style.width = pct + "%";
-    row._label.textContent = pct.toFixed(0) + "%";
-    row._meta.textContent = "Lv " + s.level;
+    row._label.textContent = unlocked ? pct.toFixed(0) + "%" : "Locked";
+    row._meta.textContent = unlocked ? "Lv " + s.level : "Locked";
     row._info.textContent = "Lv " + s.level;
-    row.style.opacity = skillUnlocked(def) ? "1" : "0.4";
+    row.style.opacity = unlocked ? "1" : "0.4";
   });
 
   jobDefs.forEach(def => {
     const j = state.jobs[def.id];
     const row = j._row;
-    const pct = Math.min(1, j.progress) * 100;
+    const unlocked = jobUnlocked(def);
+    const pct = unlocked ? Math.min(1, j.progress) * 100 : 0;
     row._fill.style.width = pct + "%";
-    row._label.textContent = pct.toFixed(0) + "%";
-    row._meta.textContent = "Lv " + j.level;
+    row._label.textContent = unlocked ? pct.toFixed(0) + "%" : "Locked";
+    row._meta.textContent = unlocked ? "Lv " + j.level : "Locked";
     row._info.textContent = "Lv " + j.level;
-    row.style.opacity = jobUnlocked(def) ? "1" : "0.4";
+    row.style.opacity = unlocked ? "1" : "0.4";
   });
 }
 
@@ -302,7 +315,9 @@ function saveGame() {
 function loadGame() {
   const raw = localStorage.getItem(SAVE_KEY);
   if (!raw) return;
-  state = JSON.parse(raw);
+  const loaded = JSON.parse(raw);
+  state = Object.assign({}, state, loaded);
+  initState();
   buildUI();
 }
 
@@ -312,7 +327,60 @@ function wipeGame() {
 }
 
 // TABS
-document.querySelectorAll(".tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    if (btn.classList.contains("locked")) return;
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("
+function setupTabs() {
+  const tabs = document.querySelectorAll(".tab-btn");
+  const panels = {
+    skills: document.getElementById("tab-skills"),
+    jobs: document.getElementById("tab-jobs"),
+    void: document.getElementById("tab-void")
+  };
+
+  tabs.forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (btn.classList.contains("locked")) return;
+      const id = btn.dataset.tab;
+      tabs.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      Object.values(panels).forEach(p => p.classList.remove("active"));
+      panels[id].classList.add("active");
+    });
+  });
+}
+
+// BUTTONS
+function setupButtons() {
+  el.feedVoidBtn.addEventListener("click", () => {
+    const gain = 1 * getVoidMult();
+    state.dust += gain;
+    floatText("+" + gain.toFixed(0) + " Dust", el.feedVoidBtn.getBoundingClientRect());
+  });
+  el.saveBtn.addEventListener("click", saveGame);
+  el.loadBtn.addEventListener("click", () => {
+    loadGame();
+    render();
+  });
+  el.wipeBtn.addEventListener("click", () => {
+    if (confirm("Wipe save?")) wipeGame();
+  });
+}
+
+// MAIN LOOP
+function startLoop() {
+  let last = performance.now();
+  function frame(now) {
+    const dt = now - last;
+    last = now;
+    tick(dt);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+// BOOT
+initState();
+buildUI();
+setupTabs();
+setupButtons();
+loadGame();
+render();
+startLoop();
