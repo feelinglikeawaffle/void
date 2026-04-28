@@ -386,14 +386,14 @@
 
 <script>
 (function() {
-  const SAVE_KEY = "feeding_the_void_save_v2";
+  const SAVE_KEY = "feeding_the_void_save_v3";
 
   let state = {
     time: 0,
     dust: 0,
     fragments: 0,
     voidFavor: 0,
-    baseXpRate: 1, // base XP/sec that skills can modify
+    baseXpRate: 1,
     skills: {},
     jobs: {},
     unlocks: {
@@ -410,6 +410,7 @@
       desc: "Sharpen your mind. Slightly speeds up all skills.",
       baseDuration: 4000,
       baseXpPerCycle: 3,
+      durationGrowth: 0.10,
       requires: null,
       effectType: "skillSpeed",
       effectPerLevel: 0.01
@@ -420,6 +421,7 @@
       desc: "Learn to feel the pull of the Void. Unlocks void‑related work.",
       baseDuration: 5000,
       baseXpPerCycle: 3,
+      durationGrowth: 0.12,
       requires: { skill: "focus", level: 5 },
       effectType: "jobSpeed",
       effectPerLevel: 0.02
@@ -430,6 +432,7 @@
       desc: "Sit in stillness. Increases XP gain for all skills.",
       baseDuration: 6000,
       baseXpPerCycle: 3,
+      durationGrowth: 0.15,
       requires: { skill: "void_sense", level: 10 },
       effectType: "xpRate",
       effectPerLevel: 0.05
@@ -443,6 +446,7 @@
       desc: "Collect cosmic dust drifting at the edge of the Void.",
       baseDuration: 5000,
       baseReward: 1,
+      durationGrowth: 0.08,
       resource: "dust",
       req: { skill: "focus", level: 1 }
     },
@@ -452,6 +456,7 @@
       desc: "Sort fragments of broken realities.",
       baseDuration: 7000,
       baseReward: 1,
+      durationGrowth: 0.10,
       resource: "fragments",
       req: { skill: "void_sense", level: 2 }
     }
@@ -487,8 +492,7 @@
         id: def.id,
         level: 0,
         xp: 0,
-        progress: 0,
-        duration: def.baseDuration
+        progress: 0
       };
     });
     jobDefs.forEach(def => {
@@ -496,8 +500,7 @@
         id: def.id,
         level: 0,
         xp: 0,
-        progress: 0,
-        duration: def.baseDuration
+        progress: 0
       };
     });
   }
@@ -833,7 +836,8 @@
       if (!s) return;
       if (!skillUnlocked(def)) return;
       if (s.progress > 0 && s.progress < 1) {
-        const effectiveDuration = s.duration / skillSpeedMult;
+        const effectiveDuration =
+          (def.baseDuration * (1 + s.level * def.durationGrowth)) / skillSpeedMult;
         s.progress += dt / effectiveDuration;
         if (s.progress >= 1) {
           s.progress = 1;
@@ -859,7 +863,8 @@
       if (!j) return;
       if (!jobIsUnlocked(def)) return;
       if (j.progress > 0 && j.progress < 1) {
-        const effectiveDuration = j.duration / jobSpeedMult;
+        const effectiveDuration =
+          (def.baseDuration * (1 + j.level * def.durationGrowth)) / jobSpeedMult;
         j.progress += dt / effectiveDuration;
         if (j.progress >= 1) {
           j.progress = 1;
@@ -988,12 +993,12 @@
       state = Object.assign({}, state, loaded);
       skillDefs.forEach(def => {
         if (!state.skills[def.id]) {
-          state.skills[def.id] = { id: def.id, level: 0, xp: 0, progress: 0, duration: def.baseDuration };
+          state.skills[def.id] = { id: def.id, level: 0, xp: 0, progress: 0 };
         }
       });
       jobDefs.forEach(def => {
         if (!state.jobs[def.id]) {
-          state.jobs[def.id] = { id: def.id, level: 0, xp: 0, progress: 0, duration: def.baseDuration };
+          state.jobs[def.id] = { id: def.id, level: 0, xp: 0, progress: 0 };
         }
       });
       Object.values(state.skills).forEach(s => { s._row = null; });
