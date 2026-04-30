@@ -2,199 +2,131 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Feeding the Void — Massive Expansion</title>
+  <title>Void Incremental</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="app">
-
-  <!-- HEADER -->
-  <header>
-    <div>
-      <h1>FEEDING THE VOID</h1>
-      <div class="sub">A cosmic incremental about bars, entropy, and infinite ascension.</div>
-    </div>
-    <div class="sub" id="time-display">t=0s</div>
-  </header>
-
-  <!-- VOID PANEL -->
-  <div id="void-panel">
-    <div id="void-panel-left">
-      <div id="void-name">THE HUNGRY VOID</div>
-
-      <div id="void-favor-line">
-        Void Favor: <span id="void-favor-value">0</span>
+  <div id="app">
+    <header>
+      <div>
+        <h1>Void Incremental</h1>
+        <div class="sub">Dust → Refinery → Void → Beyond</div>
       </div>
-
-      <div id="void-mult-line">
-        Global Multiplier: <span id="void-mult-value">x1.00</span>
+      <div id="header-resources">
+        <!-- You can expand this later if you want live header counters -->
       </div>
+    </header>
 
-      <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">
-        Ascendant Shards: <span id="shard-count">0</span><br>
-        Transcendent Essence: <span id="essence-count">0</span><br>
-        Eternal Embers: <span id="ember-count">0</span>
+    <!-- Void summary panel -->
+    <div id="void-panel">
+      <div id="void-panel-left">
+        <div id="void-name">The Void</div>
+        <div id="resource-line">
+          Void Favor: <span id="void-favor-value">0</span><br>
+          Void Multiplier: <span id="void-mult-value">x1.00</span>
+        </div>
+      </div>
+      <div id="void-panel-right">
+        <div>Ascendant Shards: <span id="shard-count">0</span></div>
+        <div>Transcendent Essence: <span id="essence-count">0</span></div>
+        <div>Eternal Embers: <span id="ember-count">0</span></div>
       </div>
     </div>
 
-    <div id="void-panel-right">
+    <!-- Tabs -->
+    <div id="tabs">
+      <button class="tab-btn active" data-tab="skills">Skills</button>
+      <button class="tab-btn" data-tab="jobs">Jobs</button>
+      <button class="tab-btn" data-tab="void">Void</button>
+      <button class="tab-btn" data-tab="shop">Shop</button>
+      <button class="tab-btn" data-tab="prestige">Prestige</button>
+    </div>
 
-      <!-- Updated ID -->
-      <button id="feed-dust-btn">Feed the Void (Dust)</button>
+    <!-- Tab: Skills -->
+    <div id="tab-skills" class="tab active">
+      <h2>Skills</h2>
+      <div id="skills-container"></div>
+    </div>
 
-      <div id="resource-line">
-        Dust: <span id="dust-count">0</span> • 
-        Fragments: <span id="fragment-count">0</span> • 
-        Echoes: <span id="echo-count">0</span><br>
-        Cores: <span id="core-count">0</span> • 
-        Sigils: <span id="sigil-count">0</span> • 
-        Paradox Dust: <span id="paradox-count">0</span><br>
-        Rift Energy: <span id="rift-count">0</span> • 
-        Reality Shards: <span id="reality-count">0</span> • 
-        Void Crystals: <span id="crystal-count">0</span><br>
-        Astral Fibers: <span id="fiber-count">0</span> • 
-        Entropic Mass: <span id="mass-count">0</span>
+    <!-- Tab: Jobs -->
+    <div id="tab-jobs" class="tab">
+      <h2>Jobs / Entities</h2>
+      <div id="jobs-container"></div>
+    </div>
+
+    <!-- Tab: Void -->
+    <div id="tab-void" class="tab">
+      <h2>Void</h2>
+      <div id="void-actions"></div>
+    </div>
+
+    <!-- Tab: Shop -->
+    <div id="tab-shop" class="tab">
+      <h2>Shop</h2>
+
+      <h3>Resource Upgrades</h3>
+      <div id="shop-resource"></div>
+
+      <h3>Void Upgrades</h3>
+      <div id="shop-void"></div>
+
+      <h3>Ascend Upgrades</h3>
+      <div id="shop-ascend"></div>
+
+      <h3>Transcend Upgrades</h3>
+      <div id="shop-transcend"></div>
+
+      <h3>Eternal Upgrades</h3>
+      <div id="shop-eternal"></div>
+    </div>
+
+    <!-- Tab: Prestige -->
+    <div id="tab-prestige" class="tab">
+      <h2>Prestige</h2>
+
+      <div id="tab-ascend">
+        <h3>Ascend</h3>
+        <div id="ascend-info">Requires 1000 Void Favor</div>
+        <button id="ascend-btn">Ascend</button>
+      </div>
+
+      <div id="tab-transcend">
+        <h3>Transcend</h3>
+        <div id="transcend-info">Requires 10000 Void Favor</div>
+        <button id="transcend-btn">Transcend</button>
+      </div>
+
+      <div id="tab-eternal">
+        <h3>Eternal</h3>
+        <div id="eternal-info">Requires 100000 Void Favor</div>
+        <button id="eternal-btn">Eternal</button>
       </div>
     </div>
-  </div>
 
-  <!-- TABS -->
-  <div id="tabs">
-    <button class="tab-btn active" data-tab="skills">Skills</button>
-    <button class="tab-btn" data-tab="jobs">Jobs</button>
-    <button class="tab-btn" data-tab="void">Void</button>
-    <button class="tab-btn" data-tab="shop">Shop</button>
-    <button class="tab-btn locked" data-tab="ascend">Ascend</button>
-    <button class="tab-btn locked" data-tab="transcend">Transcend</button>
-    <button class="tab-btn locked" data-tab="eternal">Eternal</button>
-  </div>
-
-  <!-- SKILLS TAB -->
-  <div id="tab-skills" class="tab active">
-    <div class="section-title">Training the Vessel</div>
-    <div id="skills-container"></div>
-  </div>
-
-  <!-- JOBS TAB -->
-  <div id="tab-jobs" class="tab">
-    <div class="section-title">Work for the Void</div>
-    <div id="jobs-container"></div>
-  </div>
-
-  <!-- VOID TAB -->
-  <div id="tab-void" class="tab">
-    <div class="section-title">Feeding Rituals</div>
-
-    <label class="checkbox-row">
-      <input type="checkbox" id="auto-void-toggle">
-      Auto‑Feed the Void
-    </label>
-
-    <div id="void-actions"></div>
-  </div>
-
-  <!-- SHOP TAB -->
-  <div id="tab-shop" class="tab">
-    <div class="section-title">Shop Upgrades</div>
-
-    <h3 class="section-title">Resource Upgrades</h3>
-    <div id="shop-resource"></div>
-
-    <h3 class="section-title">Void Upgrades</h3>
-    <div id="shop-void"></div>
-
-    <h3 class="section-title">Ascension Upgrades</h3>
-    <div id="shop-ascend"></div>
-
-    <h3 class="section-title">Transcendence Upgrades</h3>
-    <div id="shop-transcend"></div>
-
-    <h3 class="section-title">Eternal Upgrades</h3>
-    <div id="shop-eternal"></div>
-  </div>
-
-  <!-- ASCENSION TAB -->
-  <div id="tab-ascend" class="tab">
-    <div class="section-title">Ascension</div>
-    <p style="font-size:0.8rem;color:var(--muted);">
-      Reset skills, jobs, and basic resources to gain <strong>Ascendant Shards</strong> for permanent upgrades.
-    </p>
-
-    <div id="ascend-info" style="font-size:0.8rem;color:var(--muted);margin-bottom:6px;">
-      Requirements will appear here.
+    <!-- Log + Save Controls -->
+    <div id="footer">
+      <button id="save-btn">Save</button>
+      <button id="load-btn">Load</button>
+      <button id="wipe-btn" class="danger">Wipe</button>
     </div>
 
-    <button id="ascend-btn" disabled>Ascend</button>
-
-    <h3 class="section-title" style="margin-top:12px;">Ascension Upgrades</h3>
-    <div id="ascend-upgrades"></div>
+    <div id="log" style="margin-top: 10px; max-height: 150px; overflow-y: auto; font-size: 0.8rem;"></div>
   </div>
 
-  <!-- TRANSCENDENCE TAB -->
-  <div id="tab-transcend" class="tab">
-    <div class="section-title">Transcendence</div>
-    <p style="font-size:0.8rem;color:var(--muted);">
-      A deeper reset that grants <strong>Transcendent Essence</strong> and unlocks new layers of power.
-    </p>
+  <!-- Scripts -->
+  <script src="js/state.js"></script>
+  <script src="js/elements.js"></script>
+  <script src="js/utils.js"></script>
 
-    <div id="transcend-info" style="font-size:0.8rem;color:var(--muted);margin-bottom:6px;">
-      Requirements will appear here.
-    </div>
+  <script src="js/skills.js"></script>
+  <script src="js/jobs.js"></script>
+  <script src="js/refinery.js"></script>
+  <script src="js/void.js"></script>
+  <script src="js/shop.js"></script>
+  <script src="js/prestige.js"></script>
 
-    <button id="transcend-btn" disabled>Transcend</button>
-
-    <h3 class="section-title" style="margin-top:12px;">Transcendence Upgrades</h3>
-    <div id="transcend-upgrades"></div>
-  </div>
-
-  <!-- ETERNAL TAB -->
-  <div id="tab-eternal" class="tab">
-    <div class="section-title">Eternal Layer</div>
-    <p style="font-size:0.8rem;color:var(--muted);">
-      The final prestige layer. Earn <strong>Eternal Embers</strong> to unlock infinite scaling.
-    </p>
-
-    <div id="eternal-info" style="font-size:0.8rem;color:var(--muted);margin-bottom:6px;">
-      Requirements will appear here.
-    </div>
-
-    <button id="eternal-btn" disabled>Enter Eternity</button>
-
-    <h3 class="section-title" style="margin-top:12px;">Eternal Upgrades</h3>
-    <div id="eternal-upgrades"></div>
-  </div>
-
-  <!-- LOG -->
-  <div id="log"></div>
-
-  <!-- FOOTER -->
-  <div id="footer">
-    <button id="save-btn">Save</button>
-    <button id="load-btn">Load</button>
-    <button id="wipe-btn" class="danger">Wipe Save</button>
-  </div>
-
-</div>
-
-<!-- ============================
-     MODULAR JS FILES
-     ============================ -->
-
-<script src="js/state.js"></script>
-<script src="js/elements.js"></script>
-<script src="js/utils.js"></script>
-
-<script src="js/skills.js"></script>
-<script src="js/jobs.js"></script>
-<script src="js/refinery.js"></script>
-<script src="js/void.js"></script>
-<script src="js/shop.js"></script>
-<script src="js/prestige.js"></script>
-
-<script src="js/ui.js"></script>
-<script src="js/tick.js"></script>
-<script src="js/main.js"></script>
-
-
+  <script src="js/ui.js"></script>
+  <script src="js/tick.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
