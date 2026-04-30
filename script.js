@@ -1,7 +1,7 @@
-// Feeding the Void — Large Expansion (Tuned)
-// Target: ~1 hour to first Ascension, clearer effects, hover unlock hints
+// Feeding the Void — Massive Expansion + Full Shop System (PART 1/2)
+// NOTE: Paste PART 2 immediately after this in the same file.
 
-const SAVE_KEY = "void_game_massive_v2";
+const SAVE_KEY = "void_game_massive_shop_v1";
 
 // ---------- STATE ----------
 
@@ -31,15 +31,19 @@ let state = {
   skills: {},
   jobs: {},
 
-  // prestige upgrades
+  // prestige upgrades (finite tree)
   ascUpgrades: {},
   transcendUpgrades: {},
   eternalUpgrades: {},
+
+  // SHOP upgrades (infinite)
+  shop: {},
 
   // unlock flags
   unlocks: {
     jobs: false,
     void: false,
+    shop: false,
     ascend: false,
     transcend: false,
     eternal: false
@@ -388,7 +392,7 @@ const jobDefs = [
   }
 ];
 
-// Ascension upgrades (permanent)
+// Ascension upgrades (finite tree)
 const ascUpgradeDefs = [
   { id: "asc_speed", name: "Temporal Flow", desc: "+5% global speed per level.", baseCost: 1, costMult: 2, effectPerLevel: 0.05 },
   { id: "asc_job_yield", name: "Efficient Labor", desc: "+5% job yield per level.", baseCost: 1, costMult: 2, effectPerLevel: 0.05 },
@@ -396,15 +400,331 @@ const ascUpgradeDefs = [
   { id: "asc_void_power", name: "Void Authority", desc: "+1% Void Favor effect per level.", baseCost: 2, costMult: 2.5, effectPerLevel: 0.01 }
 ];
 
-// Transcendence upgrades
+// Transcendence upgrades (finite tree)
 const transcendUpgradeDefs = [
   { id: "tr_global", name: "Meta-Time", desc: "+10% global speed per level.", baseCost: 1, costMult: 3, effectPerLevel: 0.10 },
   { id: "tr_asc_gain", name: "Ascendant Echo", desc: "+20% Ascendant Shard gain per level.", baseCost: 2, costMult: 3, effectPerLevel: 0.20 }
 ];
 
-// Eternal upgrades
+// Eternal upgrades (finite tree)
 const eternalUpgradeDefs = [
   { id: "et_global", name: "Eternal Momentum", desc: "+5% global speed per level (multiplicative).", baseCost: 1, costMult: 4, effectPerLevel: 0.05 }
+];
+
+// ---------- SHOP DEFINITIONS (INFINITE) ----------
+
+// effectType keys:
+// "job_yield", "core_gain", "skill_speed", "global_speed",
+// "void_gain", "paradox_yield", "rift_speed", "reality_yield",
+// "all_gain", "fiber_yield", "mass_yield"
+
+const shopDefs = [
+  // RESOURCE SHOP
+  {
+    id: "shop_dust_eff",
+    name: "Dust Efficiency",
+    section: "resource",
+    resource: "dust",
+    baseCost: 100,
+    costMult: 1.25,
+    effectPerLevel: 0.01,
+    effectType: "job_yield",
+    desc: "+1% job yield per level."
+  },
+  {
+    id: "shop_frag_comp",
+    name: "Fragment Compression",
+    section: "resource",
+    resource: "fragments",
+    baseCost: 50,
+    costMult: 1.22,
+    effectPerLevel: 0.01,
+    effectType: "core_gain",
+    desc: "+1% Core production per level."
+  },
+  {
+    id: "shop_echo_res",
+    name: "Echo Resonance",
+    section: "resource",
+    resource: "echoes",
+    baseCost: 25,
+    costMult: 1.30,
+    effectPerLevel: 0.01,
+    effectType: "skill_speed",
+    desc: "+1% skill speed per level."
+  },
+  {
+    id: "shop_core_stab",
+    name: "Core Stability",
+    section: "resource",
+    resource: "cores",
+    baseCost: 10,
+    costMult: 1.35,
+    effectPerLevel: 0.01,
+    effectType: "global_speed",
+    desc: "+1% global speed per level."
+  },
+  {
+    id: "shop_sigil_insight",
+    name: "Sigil Insight",
+    section: "resource",
+    resource: "sigils",
+    baseCost: 5,
+    costMult: 1.40,
+    effectPerLevel: 0.01,
+    effectType: "void_gain",
+    desc: "+1% Void Favor gain per level."
+  },
+  {
+    id: "shop_paradox_eff",
+    name: "Paradox Efficiency",
+    section: "resource",
+    resource: "paradoxDust",
+    baseCost: 5,
+    costMult: 1.45,
+    effectPerLevel: 0.01,
+    effectType: "paradox_yield",
+    desc: "+1% Paradox Dust yield per level."
+  },
+  {
+    id: "shop_rift_nav",
+    name: "Rift Navigation",
+    section: "resource",
+    resource: "riftEnergy",
+    baseCost: 3,
+    costMult: 1.50,
+    effectPerLevel: 0.01,
+    effectType: "rift_speed",
+    desc: "+1% Rift job speed per level."
+  },
+  {
+    id: "shop_reality_comp",
+    name: "Reality Compression",
+    section: "resource",
+    resource: "realityShards",
+    baseCost: 2,
+    costMult: 1.55,
+    effectPerLevel: 0.01,
+    effectType: "reality_yield",
+    desc: "+1% Reality Shard yield per level."
+  },
+  {
+    id: "shop_crystal_amp",
+    name: "Crystal Amplification",
+    section: "resource",
+    resource: "voidCrystals",
+    baseCost: 1,
+    costMult: 1.60,
+    effectPerLevel: 0.01,
+    effectType: "all_gain",
+    desc: "+1% all resource gain per level."
+  },
+  {
+    id: "shop_fiber_weave",
+    name: "Astral Weaving",
+    section: "resource",
+    resource: "astralFibers",
+    baseCost: 1,
+    costMult: 1.65,
+    effectPerLevel: 0.01,
+    effectType: "fiber_yield",
+    desc: "+1% Astral Fiber yield per level."
+  },
+  {
+    id: "shop_mass_mastery",
+    name: "Entropy Mastery",
+    section: "resource",
+    resource: "entropicMass",
+    baseCost: 1,
+    costMult: 1.70,
+    effectPerLevel: 0.01,
+    effectType: "mass_yield",
+    desc: "+1% Entropic Mass yield per level."
+  },
+
+  // VOID SHOP (Void Favor)
+  {
+    id: "shop_void_hunger",
+    name: "Void Hunger",
+    section: "void",
+    resource: "voidFavor",
+    baseCost: 10,
+    costMult: 1.25,
+    effectPerLevel: 0.01,
+    effectType: "void_gain",
+    desc: "+1% Void Favor gain per level."
+  },
+  {
+    id: "shop_void_pressure",
+    name: "Void Pressure",
+    section: "void",
+    resource: "voidFavor",
+    baseCost: 20,
+    costMult: 1.30,
+    effectPerLevel: 0.01,
+    effectType: "global_speed",
+    desc: "+1% global speed per level."
+  },
+  {
+    id: "shop_void_saturation",
+    name: "Void Saturation",
+    section: "void",
+    resource: "voidFavor",
+    baseCost: 15,
+    costMult: 1.28,
+    effectPerLevel: 0.01,
+    effectType: "job_yield",
+    desc: "+1% job yield per level."
+  },
+  {
+    id: "shop_void_clarity",
+    name: "Void Clarity",
+    section: "void",
+    resource: "voidFavor",
+    baseCost: 15,
+    costMult: 1.28,
+    effectPerLevel: 0.01,
+    effectType: "skill_speed",
+    desc: "+1% skill speed per level."
+  },
+
+  // ASCENSION SHOP (Shards)
+  {
+    id: "shop_asc_flow",
+    name: "Ascendant Flow",
+    section: "ascend",
+    resource: "ascendantShards",
+    baseCost: 1,
+    costMult: 1.5,
+    effectPerLevel: 0.02,
+    effectType: "global_speed",
+    desc: "+2% global speed per level."
+  },
+  {
+    id: "shop_asc_insight",
+    name: "Ascendant Insight",
+    section: "ascend",
+    resource: "ascendantShards",
+    baseCost: 1,
+    costMult: 1.5,
+    effectPerLevel: 0.02,
+    effectType: "skill_speed",
+    desc: "+2% skill speed per level."
+  },
+  {
+    id: "shop_asc_industry",
+    name: "Ascendant Industry",
+    section: "ascend",
+    resource: "ascendantShards",
+    baseCost: 1,
+    costMult: 1.5,
+    effectPerLevel: 0.02,
+    effectType: "job_yield",
+    desc: "+2% job yield per level."
+  },
+  {
+    id: "shop_asc_authority",
+    name: "Ascendant Authority",
+    section: "ascend",
+    resource: "ascendantShards",
+    baseCost: 2,
+    costMult: 1.6,
+    effectPerLevel: 0.01,
+    effectType: "void_effect",
+    desc: "+1% Void Favor effect per level."
+  },
+
+  // TRANSCENDENCE SHOP (Essence)
+  {
+    id: "shop_tr_meta_speed",
+    name: "Meta-Speed",
+    section: "transcend",
+    resource: "transcendentEssence",
+    baseCost: 1,
+    costMult: 2.0,
+    effectPerLevel: 0.05,
+    effectType: "global_speed",
+    desc: "+5% global speed per level."
+  },
+  {
+    id: "shop_tr_meta_yield",
+    name: "Meta-Yield",
+    section: "transcend",
+    resource: "transcendentEssence",
+    baseCost: 1,
+    costMult: 2.0,
+    effectPerLevel: 0.05,
+    effectType: "job_yield",
+    desc: "+5% job yield per level."
+  },
+  {
+    id: "shop_tr_meta_mind",
+    name: "Meta-Mind",
+    section: "transcend",
+    resource: "transcendentEssence",
+    baseCost: 1,
+    costMult: 2.0,
+    effectPerLevel: 0.05,
+    effectType: "skill_speed",
+    desc: "+5% skill speed per level."
+  },
+  {
+    id: "shop_tr_meta_reality",
+    name: "Meta-Reality",
+    section: "transcend",
+    resource: "transcendentEssence",
+    baseCost: 2,
+    costMult: 2.2,
+    effectPerLevel: 0.05,
+    effectType: "all_gain",
+    desc: "+5% all resource gain per level."
+  },
+
+  // ETERNAL SHOP (Embers)
+  {
+    id: "shop_et_momentum",
+    name: "Eternal Momentum",
+    section: "eternal",
+    resource: "eternalEmbers",
+    baseCost: 1,
+    costMult: 3.0,
+    effectPerLevel: 0.05,
+    effectType: "global_speed_mult",
+    desc: "+5% global speed per level (multiplicative)."
+  },
+  {
+    id: "shop_et_growth",
+    name: "Eternal Growth",
+    section: "eternal",
+    resource: "eternalEmbers",
+    baseCost: 1,
+    costMult: 3.0,
+    effectPerLevel: 0.05,
+    effectType: "all_gain",
+    desc: "+5% all resource gain per level."
+  },
+  {
+    id: "shop_et_insight",
+    name: "Eternal Insight",
+    section: "eternal",
+    resource: "eternalEmbers",
+    baseCost: 1,
+    costMult: 3.0,
+    effectPerLevel: 0.05,
+    effectType: "skill_speed",
+    desc: "+5% skill speed per level."
+  },
+  {
+    id: "shop_et_industry",
+    name: "Eternal Industry",
+    section: "eternal",
+    resource: "eternalEmbers",
+    baseCost: 1,
+    costMult: 3.0,
+    effectPerLevel: 0.05,
+    effectType: "job_yield",
+    desc: "+5% job yield per level."
+  }
 ];
 
 // ---------- ELEMENTS ----------
@@ -435,6 +755,13 @@ const el = {
   jobs: document.getElementById("jobs-container"),
   voidActions: document.getElementById("void-actions"),
   autoVoid: document.getElementById("auto-void-toggle"),
+
+  // shop containers
+  shopResource: document.getElementById("shop-resource"),
+  shopVoid: document.getElementById("shop-void"),
+  shopAscend: document.getElementById("shop-ascend"),
+  shopTranscend: document.getElementById("shop-transcend"),
+  shopEternal: document.getElementById("shop-eternal"),
 
   ascendInfo: document.getElementById("ascend-info"),
   ascendBtn: document.getElementById("ascend-btn"),
@@ -473,6 +800,9 @@ function initState() {
   });
   eternalUpgradeDefs.forEach(def => {
     if (!state.eternalUpgrades[def.id]) state.eternalUpgrades[def.id] = 0;
+  });
+  shopDefs.forEach(def => {
+    if (!state.shop[def.id]) state.shop[def.id] = 0;
   });
 }
 
@@ -532,23 +862,92 @@ function getEternalGlobalMult() {
   return Math.pow(1 + 0.05, lv);
 }
 
+// ---------- SHOP EFFECT HELPERS ----------
+
+function getShopBonus(type) {
+  let total = 0;
+  for (const id in state.shop) {
+    const lv = state.shop[id] || 0;
+    if (!lv) continue;
+    const def = shopDefs.find(x => x.id === id);
+    if (!def || def.effectType !== type) continue;
+    total += lv * def.effectPerLevel;
+  }
+  return total;
+}
+
+function getShopMult(type) {
+  // additive bonuses: 1 + sum
+  const addTypes = [
+    "job_yield",
+    "core_gain",
+    "skill_speed",
+    "global_speed",
+    "void_gain",
+    "paradox_yield",
+    "rift_speed",
+    "reality_yield",
+    "all_gain",
+    "fiber_yield",
+    "mass_yield",
+    "void_effect"
+  ];
+  if (addTypes.includes(type)) {
+    return 1 + getShopBonus(type);
+  }
+  // multiplicative global speed
+  if (type === "global_speed_mult") {
+    const bonus = getShopBonus(type);
+    return Math.pow(1 + 0.05, bonus / 0.05); // each level is +5% multiplicative
+  }
+  return 1;
+}
+
 function getGlobalSpeedMult() {
   // Baseline +25% speed to keep things snappy
   return (
     1.25 *
     getAscSpeedMult() *
     getTranscendGlobalMult() *
-    getEternalGlobalMult()
+    getEternalGlobalMult() *
+    getShopMult("global_speed") *
+    getShopMult("global_speed_mult")
   );
 }
 
+function getSkillSpeedMult() {
+  return (
+    getAscSkillMult() *
+    getShopMult("skill_speed")
+  );
+}
+
+function getJobYieldMult() {
+  return (
+    getAscJobYieldMult() *
+    getShopMult("job_yield")
+  );
+}
+
+function getAllGainMult() {
+  return getShopMult("all_gain");
+}
+
+function getVoidGainMult() {
+  return getShopMult("void_gain");
+}
+
+function getVoidEffectMult() {
+  return 1 + getShopBonus("void_effect");
+}
+
 function getVoidMult() {
-  // Void Favor: 0.5% per favor, scaled by asc upgrade
-  const base = 1 + state.voidFavor * 0.005 * getAscVoidPowerMult();
+  // Void Favor: 0.5% per favor, scaled by asc upgrade + shop void_effect
+  const base = 1 + state.voidFavor * 0.005 * getAscVoidPowerMult() * getVoidEffectMult();
   return base;
 }
 
-// ---------- UI BUILD ----------
+// ---------- UI BUILD HELPERS ----------
 
 function createRow(def) {
   const row = document.createElement("div");
@@ -612,6 +1011,32 @@ function createRow(def) {
   return row;
 }
 
+// ---------- FLOATING TEXT & LOG ----------
+
+function floatText(text, rect, color = "#a855f7") {
+  if (!rect) return;
+  const elFt = document.createElement("div");
+  elFt.className = "floating-text";
+  elFt.textContent = text;
+  elFt.style.left = rect.left + rect.width / 2 + "px";
+  elFt.style.top = rect.top + rect.height / 2 + "px";
+  elFt.style.color = color;
+  document.body.appendChild(elFt);
+  requestAnimationFrame(() => {
+    elFt.style.opacity = "1";
+    elFt.style.transform = "translateY(-20px)";
+  });
+  setTimeout(() => elFt.remove(), 600);
+}
+
+function log(msg) {
+  const line = document.createElement("div");
+  line.textContent = msg;
+  el.log.prepend(line);
+}
+
+// ---------- BUILD MAIN UI (SKILLS / JOBS / VOID / PRESTIGE / SHOP) ----------
+
 function buildUI() {
   el.skills.innerHTML = "";
   el.jobs.innerHTML = "";
@@ -619,6 +1044,11 @@ function buildUI() {
   el.ascendUpgrades.innerHTML = "";
   el.transcendUpgrades.innerHTML = "";
   el.eternalUpgrades.innerHTML = "";
+  el.shopResource.innerHTML = "";
+  el.shopVoid.innerHTML = "";
+  el.shopAscend.innerHTML = "";
+  el.shopTranscend.innerHTML = "";
+  el.shopEternal.innerHTML = "";
 
   // skills
   skillDefs.forEach(def => {
@@ -646,18 +1076,18 @@ function buildUI() {
   vName.textContent = "Dust Offering";
   const vMeta = document.createElement("div");
   vMeta.className = "row-meta";
-  vMeta.textContent = "10 Dust → 1 Void Favor (improved by Void skills)";
+  vMeta.textContent = "10 Dust → 1 Void Favor (improved by Void skills & shop).";
   vHeader.appendChild(vName);
   vHeader.appendChild(vMeta);
   const vDesc = document.createElement("div");
   vDesc.className = "row-desc";
-  vDesc.textContent = "Convert Dust into Void Favor. Affected by Void Sensitivity and Void Channeling.";
+  vDesc.textContent = "Convert Dust into Void Favor. Affected by Void Sensitivity, Void Channeling, and Void shop upgrades.";
   vLeft.appendChild(vHeader);
   vLeft.appendChild(vDesc);
   vRow.appendChild(vLeft);
   el.voidActions.appendChild(vRow);
 
-  // ascension upgrades
+  // ascension upgrades (finite)
   ascUpgradeDefs.forEach(def => {
     const row = document.createElement("div");
     row.className = "asc-upgrade-row";
@@ -673,7 +1103,7 @@ function buildUI() {
     el.ascendUpgrades.appendChild(row);
   });
 
-  // transcendence upgrades
+  // transcendence upgrades (finite)
   transcendUpgradeDefs.forEach(def => {
     const row = document.createElement("div");
     row.className = "asc-upgrade-row";
@@ -689,7 +1119,7 @@ function buildUI() {
     el.transcendUpgrades.appendChild(row);
   });
 
-  // eternal upgrades
+  // eternal upgrades (finite)
   eternalUpgradeDefs.forEach(def => {
     const row = document.createElement("div");
     row.className = "asc-upgrade-row";
@@ -704,30 +1134,39 @@ function buildUI() {
     row.appendChild(btn);
     el.eternalUpgrades.appendChild(row);
   });
+
+  // SHOP UI
+  buildShopUI();
 }
 
-// ---------- FLOATING TEXT & LOG ----------
+// ---------- SHOP UI BUILD ----------
 
-function floatText(text, rect, color = "#a855f7") {
-  if (!rect) return;
-  const elFt = document.createElement("div");
-  elFt.className = "floating-text";
-  elFt.textContent = text;
-  elFt.style.left = rect.left + rect.width / 2 + "px";
-  elFt.style.top = rect.top + rect.height / 2 + "px";
-  elFt.style.color = color;
-  document.body.appendChild(elFt);
-  requestAnimationFrame(() => {
-    elFt.style.opacity = "1";
-    elFt.style.transform = "translateY(-20px)";
+function buildShopUI() {
+  shopDefs.forEach(def => {
+    const row = document.createElement("div");
+    row.className = "asc-upgrade-row";
+
+    const left = document.createElement("div");
+    left.innerHTML =
+      `<strong>${def.name}</strong><br>` +
+      `<span style="color:var(--muted);font-size:0.75rem;">${def.desc}</span>`;
+
+    const btn = document.createElement("button");
+    btn.textContent = "Buy";
+    btn.addEventListener("click", () => buyShopUpgrade(def.id));
+
+    row._btn = btn;
+    row._def = def;
+
+    row.appendChild(left);
+    row.appendChild(btn);
+
+    if (def.section === "resource") el.shopResource.appendChild(row);
+    else if (def.section === "void") el.shopVoid.appendChild(row);
+    else if (def.section === "ascend") el.shopAscend.appendChild(row);
+    else if (def.section === "transcend") el.shopTranscend.appendChild(row);
+    else if (def.section === "eternal") el.shopEternal.appendChild(row);
   });
-  setTimeout(() => elFt.remove(), 600);
-}
-
-function log(msg) {
-  const line = document.createElement("div");
-  line.textContent = msg;
-  el.log.prepend(line);
 }
 
 // ---------- UNLOCKS ----------
@@ -742,6 +1181,11 @@ function updateUnlocks() {
     state.unlocks.void = true;
     document.querySelector('[data-tab="void"]').classList.remove("locked");
     log("The Void acknowledges your offerings. Void tab unlocked.");
+  }
+  if (!state.unlocks.shop && (state.dust >= 50 || state.voidFavor >= 10)) {
+    state.unlocks.shop = true;
+    document.querySelector('[data-tab="shop"]').classList.remove("locked");
+    log("A strange market appears. Shop unlocked.");
   }
 
   const skillLv = totalSkillLevels();
@@ -767,295 +1211,7 @@ function updateUnlocks() {
   }
 }
 
-// ---------- TICK ----------
-
-function tick(dt) {
-  const speedMult = getGlobalSpeedMult();
-  const voidMult = getVoidMult();
-  const effectiveDt = dt * speedMult;
-
-  state.time += dt;
-
-  // SKILLS
-  skillDefs.forEach(def => {
-    const s = state.skills[def.id];
-    if (!skillUnlocked(def)) return;
-    if (s.progress === 0) s.progress = 0.0001;
-
-    let duration = def.baseDuration * (1 + s.level * def.durationGrowth);
-
-    // skill-based speed bonuses
-    let skillSpeedBonus = 1;
-    if (state.skills.focus.level > 0) skillSpeedBonus += state.skills.focus.level * 0.01;
-    if (state.skills.meditation.level > 0) skillSpeedBonus += state.skills.meditation.level * 0.01;
-    if (state.skills.breath_control.level > 0) skillSpeedBonus += state.skills.breath_control.level * 0.005;
-    if (state.skills.endurance.level > 0) skillSpeedBonus += state.skills.endurance.level * 0.005;
-    if (state.skills.pain_tolerance.level > 0) skillSpeedBonus += state.skills.pain_tolerance.level * 0.005;
-    if (state.skills.time_perception.level > 0) skillSpeedBonus += state.skills.time_perception.level * 0.005;
-    if (state.skills.parallel_thought.level > 0) skillSpeedBonus += state.skills.parallel_thought.level * 0.005;
-
-    duration /= skillSpeedBonus;
-    duration /= voidMult;
-    duration /= getAscSkillMult();
-
-    s.progress += effectiveDt / duration;
-
-    if (s.progress >= 1) {
-      s.level++;
-      s.progress = 0.0001;
-      if (s._row) floatText("LEVEL UP!", s._row.getBoundingClientRect());
-
-      if (def.id === "memory_weaving") state.echoes += 1;
-    }
-  });
-
-  // JOBS
-  jobDefs.forEach(def => {
-    const j = state.jobs[def.id];
-    if (!jobUnlocked(def)) return;
-    if (j.progress === 0) j.progress = 0.0001;
-
-    let duration = def.baseDuration * (1 + j.level * def.durationGrowth);
-
-    let jobSpeedBonus = 1;
-    if (state.skills.void_resistance.level > 0) jobSpeedBonus += state.skills.void_resistance.level * 0.01;
-    if (state.skills.dreamwalking.level > 0) jobSpeedBonus += state.skills.dreamwalking.level * 0.005;
-
-    duration /= jobSpeedBonus;
-    duration /= voidMult;
-
-    j.progress += effectiveDt / duration;
-
-    if (j.progress >= 1) {
-      let baseReward = 1.5 + j.level * 0.6;
-
-      // global resource gain boosts
-      let resourceMult = 1;
-      if (state.skills.void_binding.level > 0) resourceMult += state.skills.void_binding.level * 0.01;
-      if (state.skills.reality_anchoring.level > 0) resourceMult += state.skills.reality_anchoring.level * 0.01;
-      if (state.skills.entropy_shaping.level > 0 && def.resource === "entropicMass") resourceMult += state.skills.entropy_shaping.level * 0.02;
-      if (state.skills.phase_stability.level > 0 && def.resource === "astralFibers") resourceMult += state.skills.phase_stability.level * 0.02;
-      if (state.skills.mind_fracture.level > 0) resourceMult += state.skills.mind_fracture.level * 0.01;
-      if (state.skills.self_replication.level > 0) resourceMult += state.skills.self_replication.level * 0.01;
-
-      const reward =
-        baseReward *
-        resourceMult *
-        voidMult *
-        getAscJobYieldMult();
-
-      state[def.resource] += reward;
-      if (j._row) floatText("+" + reward.toFixed(0) + " " + def.resource, j._row.getBoundingClientRect());
-      j.level++;
-      j.progress = 0.0001;
-    }
-  });
-
-  // AUTO VOID
-  if (state.unlocks.void && el.autoVoid.checked) {
-    const voidGainMult =
-      1 +
-      (state.skills.void_sense.level || 0) * 0.02 +
-      (state.skills.void_channeling.level || 0) * 0.03;
-
-    if (state.dust >= 10) {
-      state.dust -= 10;
-      const gain = 1 * voidGainMult;
-      state.voidFavor += gain;
-      floatText("+" + gain.toFixed(1) + " Void Favor", el.voidActions.getBoundingClientRect());
-    }
-  }
-
-  updateUnlocks();
-  updatePrestigeInfo();
-  render();
-}
-
-// ---------- PRESTIGE INFO & BUTTONS ----------
-
-function updatePrestigeInfo() {
-  const skillLv = totalSkillLevels();
-  const jobLv = totalJobLevels();
-  const vf = state.voidFavor;
-
-  const ascReq = { skills: 160, jobs: 80, favor: 200 };
-  el.ascendInfo.textContent =
-    `Ascend requires: Skill Levels ${skillLv}/${ascReq.skills}, ` +
-    `Job Levels ${jobLv}/${ascReq.jobs}, Void Favor ${vf.toFixed(0)}/${ascReq.favor}.`;
-  el.ascendBtn.disabled = !(skillLv >= ascReq.skills && jobLv >= ascReq.jobs && vf >= ascReq.favor);
-
-  const trReqShards = 50;
-  el.transcendInfo.textContent =
-    `Transcend requires: Ascendant Shards ${state.ascendantShards}/${trReqShards}.`;
-  el.transcendBtn.disabled = state.ascendantShards < trReqShards;
-
-  const etReqEssence = 20;
-  el.eternalInfo.textContent =
-    `Eternal layer requires: Transcendent Essence ${state.transcendentEssence}/${etReqEssence}.`;
-  el.eternalBtn.disabled = state.transcendentEssence < etReqEssence;
-
-  Array.from(el.ascendUpgrades.children).forEach(row => {
-    const def = row._def;
-    const lv = state.ascUpgrades[def.id] || 0;
-    const cost = Math.floor(def.baseCost * Math.pow(def.costMult, lv));
-    row._btn.textContent = `Buy (${cost} Shards, Lv ${lv})`;
-    row._btn.disabled = state.ascendantShards < cost;
-  });
-
-  Array.from(el.transcendUpgrades.children).forEach(row => {
-    const def = row._def;
-    const lv = state.transcendUpgrades[def.id] || 0;
-    const cost = Math.floor(def.baseCost * Math.pow(def.costMult, lv));
-    row._btn.textContent = `Buy (${cost} Essence, Lv ${lv})`;
-    row._btn.disabled = state.transcendentEssence < cost;
-  });
-
-  Array.from(el.eternalUpgrades.children).forEach(row => {
-    const def = row._def;
-    const lv = state.eternalUpgrades[def.id] || 0;
-    const cost = Math.floor(def.baseCost * Math.pow(def.costMult, lv));
-    row._btn.textContent = `Buy (${cost} Embers, Lv ${lv})`;
-    row._btn.disabled = state.eternalEmbers < cost;
-  });
-}
-
-// ---------- PRESTIGE ACTIONS ----------
-
-function doAscend() {
-  const skillLv = totalSkillLevels();
-  const jobLv = totalJobLevels();
-  const vf = state.voidFavor;
-  const ascReq = { skills: 160, jobs: 80, favor: 200 };
-  if (skillLv < ascReq.skills || jobLv < ascReq.jobs || vf < ascReq.favor) return;
-
-  const baseGain = (skillLv + jobLv) / 40 + vf / 200;
-  const gain = Math.floor(baseGain * getTranscendAscGainMult());
-  if (gain <= 0) return;
-
-  state.ascendantShards += gain;
-  log(`You ascend and gain ${gain} Ascendant Shards.`);
-
-  state.dust = 0;
-  state.fragments = 0;
-  state.echoes = 0;
-  state.cores = 0;
-  state.sigils = 0;
-  state.paradoxDust = 0;
-  state.riftEnergy = 0;
-  state.realityShards = 0;
-  state.voidCrystals = 0;
-  state.astralFibers = 0;
-  state.entropicMass = 0;
-  state.voidFavor = 0;
-
-  Object.values(state.skills).forEach(s => {
-    s.level = 0;
-    s.progress = 0;
-  });
-  Object.values(state.jobs).forEach(j => {
-    j.level = 0;
-    j.progress = 0;
-  });
-
-  state.unlocks.jobs = false;
-  state.unlocks.void = false;
-
-  buildUI();
-  updateUnlocks();
-  updatePrestigeInfo();
-  render();
-}
-
-function doTranscend() {
-  const reqShards = 50;
-  if (state.ascendantShards < reqShards) return;
-
-  const gain = Math.floor(state.ascendantShards / 25);
-  if (gain <= 0) return;
-
-  state.transcendentEssence += gain;
-  log(`Reality folds. You gain ${gain} Transcendent Essence.`);
-
-  state.ascendantShards = 0;
-  state.dust = 0;
-  state.fragments = 0;
-  state.echoes = 0;
-  state.cores = 0;
-  state.sigils = 0;
-  state.paradoxDust = 0;
-  state.riftEnergy = 0;
-  state.realityShards = 0;
-  state.voidCrystals = 0;
-  state.astralFibers = 0;
-  state.entropicMass = 0;
-  state.voidFavor = 0;
-
-  Object.values(state.skills).forEach(s => {
-    s.level = 0;
-    s.progress = 0;
-  });
-  Object.values(state.jobs).forEach(j => {
-    j.level = 0;
-    j.progress = 0;
-  });
-
-  state.unlocks.jobs = false;
-  state.unlocks.void = false;
-  state.unlocks.ascend = false;
-
-  buildUI();
-  updateUnlocks();
-  updatePrestigeInfo();
-  render();
-}
-
-function doEternal() {
-  const reqEssence = 20;
-  if (state.transcendentEssence < reqEssence) return;
-
-  const gain = Math.floor(state.transcendentEssence / 10);
-  if (gain <= 0) return;
-
-  state.eternalEmbers += gain;
-  log(`You step into eternity and gain ${gain} Eternal Embers.`);
-
-  state.transcendentEssence = 0;
-  state.ascendantShards = 0;
-
-  state.dust = 0;
-  state.fragments = 0;
-  state.echoes = 0;
-  state.cores = 0;
-  state.sigils = 0;
-  state.paradoxDust = 0;
-  state.riftEnergy = 0;
-  state.realityShards = 0;
-  state.voidCrystals = 0;
-  state.astralFibers = 0;
-  state.entropicMass = 0;
-  state.voidFavor = 0;
-
-  Object.values(state.skills).forEach(s => {
-    s.level = 0;
-    s.progress = 0;
-  });
-  Object.values(state.jobs).forEach(j => {
-    j.level = 0;
-    j.progress = 0;
-  });
-
-  state.unlocks.jobs = false;
-  state.unlocks.void = false;
-  state.unlocks.ascend = false;
-  state.unlocks.transcend = false;
-
-  buildUI();
-  updateUnlocks();
-  updatePrestigeInfo();
-  render();
-}
-
-// ---------- UPGRADE BUY ----------
+// ---------- PRESTIGE UPGRADE BUY ----------
 
 function buyAscUpgrade(id) {
   const def = ascUpgradeDefs.find(x => x.id === id);
@@ -1093,72 +1249,485 @@ function buyEternalUpgrade(id) {
   updatePrestigeInfo();
 }
 
-// ---------- RENDER ----------
+// ---------- SHOP BUY LOGIC ----------
 
-function render() {
-  el.time.textContent = "t=" + Math.floor(state.time / 1000) + "s";
+function getShopCost(def, level) {
+  return def.baseCost * Math.pow(def.costMult, level);
+}
 
-  el.dust.textContent = state.dust.toFixed(0);
-  el.fragments.textContent = state.fragments.toFixed(0);
-  el.echoes.textContent = state.echoes.toFixed(0);
-  el.cores.textContent = state.cores.toFixed(0);
-  el.sigils.textContent = state.sigils.toFixed(0);
-  el.paradoxDust.textContent = state.paradoxDust.toFixed(0);
-  el.riftEnergy.textContent = state.riftEnergy.toFixed(0);
-  el.realityShards.textContent = state.realityShards.toFixed(0);
-  el.voidCrystals.textContent = state.voidCrystals.toFixed(0);
-  el.astralFibers.textContent = state.astralFibers.toFixed(0);
-  el.entropicMass.textContent = state.entropicMass.toFixed(0);
+function buyShopUpgrade(id) {
+  const def = shopDefs.find(x => x.id === id);
+  if (!def) return;
+  const lv = state.shop[id] || 0;
+  const cost = getShopCost(def, lv);
 
-  el.voidFavor.textContent = state.voidFavor.toFixed(1);
-  el.voidMult.textContent = "x" + (getVoidMult() * getGlobalSpeedMult()).toFixed(2);
+  const resName = def.resource;
+  if (state[resName] === undefined) return;
+  if (state[resName] < cost) return;
 
-  el.shards.textContent = state.ascendantShards.toFixed(0);
-  el.essence.textContent = state.transcendentEssence.toFixed(0);
-  el.embers.textContent = state.eternalEmbers.toFixed(0);
+  state[resName] -= cost;
+  state.shop[id] = lv + 1;
+  log(`Shop purchase: ${def.name} Lv ${lv + 1}.`);
+  updatePrestigeInfo(); // also updates shop button labels
+}
 
-  skillDefs.forEach(def => {
-    const s = state.skills[def.id];
-    const row = s._row;
-    const unlocked = skillUnlocked(def);
-    const pct = unlocked ? Math.min(1, s.progress) * 100 : 0;
-    row._fill.style.width = pct + "%";
-    row._label.textContent = unlocked ? pct.toFixed(0) + "%" : "Locked";
-    row._meta.textContent = unlocked ? "Lv " + s.level : "Locked";
-    row._info.textContent = "Lv " + s.level;
-    row.style.opacity = unlocked ? "1" : "0.4";
+// ---------- PRESTIGE INFO & SHOP BUTTON STATES ----------
 
-    if (!unlocked) {
-      if (def.requires) {
-        row.title = `Requires ${def.requires.skill} Lv ${def.requires.level}`;
-      } else {
-        row.title = "Locked";
-      }
-    } else {
-      row.title = "";
-    }
+function updatePrestigeInfo() {
+  const skillLv = totalSkillLevels();
+  const jobLv = totalJobLevels();
+  const vf = state.voidFavor;
+
+  const ascReq = { skills: 160, jobs: 80, favor: 200 };
+  el.ascendInfo.textContent =
+    `Ascend requires: Skill Levels ${skillLv}/${ascReq.skills}, ` +
+    `Job Levels ${jobLv}/${ascReq.jobs}, Void Favor ${vf.toFixed(0)}/${ascReq.favor}.`;
+  el.ascendBtn.disabled = !(skillLv >= ascReq.skills && jobLv >= ascReq.jobs && vf >= ascReq.favor);
+
+  const trReqShards = 50;
+  el.transcendInfo.textContent =
+    `Transcend requires: Ascendant Shards ${state.ascendantShards}/${trReqShards}.`;
+  el.transcendBtn.disabled = state.ascendantShards < trReqShards;
+
+  const etReqEssence = 20;
+  el.eternalInfo.textContent =
+    `Eternal layer requires: Transcendent Essence ${state.transcendentEssence}/${etReqEssence}.`;
+  el.eternalBtn.disabled = state.transcendentEssence < etReqEssence;
+
+  // finite prestige upgrade buttons
+  Array.from(el.ascendUpgrades.children).forEach(row => {
+    const def = row._def;
+    const lv = state.ascUpgrades[def.id] || 0;
+    const cost = Math.floor(def.baseCost * Math.pow(def.costMult, lv));
+    row._btn.textContent = `Buy (${cost} Shards, Lv ${lv})`;
+    row._btn.disabled = state.ascendantShards < cost;
   });
 
-  jobDefs.forEach(def => {
-    const j = state.jobs[def.id];
-    const row = j._row;
-    const unlocked = jobUnlocked(def);
-    const pct = unlocked ? Math.min(1, j.progress) * 100 : 0;
-    row._fill.style.width = pct + "%";
-    row._label.textContent = unlocked ? pct.toFixed(0) + "%" : "Locked";
-    row._meta.textContent = unlocked ? "Lv " + j.level : "Locked";
-    row._info.textContent = "Lv " + j.level;
-    row.style.opacity = unlocked ? "1" : "0.4";
+  Array.from(el.transcendUpgrades.children).forEach(row => {
+    const def = row._def;
+    const lv = state.transcendUpgrades[def.id] || 0;
+    const cost = Math.floor(def.baseCost * Math.pow(def.costMult, lv));
+    row._btn.textContent = `Buy (${cost} Essence, Lv ${lv})`;
+    row._btn.disabled = state.transcendentEssence < cost;
+  });
 
-    if (!unlocked) {
-      row.title = `Requires ${def.req.skill} Lv ${def.req.level}`;
+  Array.from(el.eternalUpgrades.children).forEach(row => {
+    const def = row._def;
+    const lv = state.eternalUpgrades[def.id] || 0;
+    const cost = Math.floor(def.baseCost * Math.pow(def.costMult, lv));
+    row._btn.textContent = `Buy (${cost} Embers, Lv ${lv})`;
+    row._btn.disabled = state.eternalEmbers < cost;
+  });
+
+  // shop buttons
+  const allShopRows = [
+    ...el.shopResource.children,
+    ...el.shopVoid.children,
+    ...el.shopAscend.children,
+    ...el.shopTranscend.children,
+    ...el.shopEternal.children
+  ];
+  allShopRows.forEach(row => {
+    const def = row._def;
+    const lv = state.shop[def.id] || 0;
+    const cost = getShopCost(def, lv);
+    const resName = def.resource;
+    const have = state[resName] || 0;
+    row._btn.textContent = `Buy (${cost.toFixed(2)} ${resName}, Lv ${lv})`;
+    row._btn.disabled = have < cost;
+
+    // simple hover hint for locked layers
+    if (def.section === "void" && !state.unlocks.void) {
+      row.title = "Requires unlocking the Void tab.";
+      row._btn.disabled = true;
+    } else if (def.section === "ascend" && !state.unlocks.ascend) {
+      row.title = "Requires unlocking Ascension.";
+      row._btn.disabled = true;
+    } else if (def.section === "transcend" && !state.unlocks.transcend) {
+      row.title = "Requires unlocking Transcendence.";
+      row._btn.disabled = true;
+    } else if (def.section === "eternal" && !state.unlocks.eternal) {
+      row.title = "Requires unlocking the Eternal layer.";
+      row._btn.disabled = true;
     } else {
       row.title = "";
     }
   });
 }
 
-// ---------- SAVE / LOAD ----------
+// ---------- END OF PART 1 ----------
+// Paste PART 2 immediately after this.
+/* ============================
+   ========= PART 2A ==========
+   ============================ */
+
+/* ---------- SKILL & JOB TICK HELPERS ---------- */
+
+function getSkillEffectiveDuration(def, level) {
+  const base = def.baseDuration * Math.pow(1 + def.durationGrowth, level);
+  const speed = getGlobalSpeedMult() * getSkillSpeedMult();
+  return base / speed;
+}
+
+function getJobEffectiveDuration(def, level) {
+  const base = def.baseDuration * Math.pow(1 + def.durationGrowth, level);
+  const speed = getGlobalSpeedMult();
+  return base / speed;
+}
+
+/* ---------- PRESTIGE ACTIONS ---------- */
+
+function doAscend() {
+  const skillLv = totalSkillLevels();
+  const jobLv = totalJobLevels();
+  const vf = state.voidFavor;
+
+  const ascReq = { skills: 160, jobs: 80, favor: 200 };
+  if (skillLv < ascReq.skills || jobLv < ascReq.jobs || vf < ascReq.favor) return;
+
+  const baseGain = (skillLv + jobLv) / 40 + vf / 200;
+  const gain = Math.floor(baseGain * getTranscendAscGainMult());
+  if (gain <= 0) return;
+
+  state.ascendantShards += gain;
+  log(`You ascend and gain ${gain} Ascendant Shards.`);
+
+  resetRun();
+  state.unlocks.jobs = false;
+  state.unlocks.void = false;
+
+  buildUI();
+  updateUnlocks();
+  updatePrestigeInfo();
+  render();
+}
+
+function doTranscend() {
+  const reqShards = 50;
+  if (state.ascendantShards < reqShards) return;
+
+  const gain = Math.floor(state.ascendantShards / 25);
+  if (gain <= 0) return;
+
+  state.transcendentEssence += gain;
+  log(`Reality folds. You gain ${gain} Transcendent Essence.`);
+
+  resetRun();
+  state.ascendantShards = 0;
+
+  state.unlocks.jobs = false;
+  state.unlocks.void = false;
+  state.unlocks.ascend = false;
+
+  buildUI();
+  updateUnlocks();
+  updatePrestigeInfo();
+  render();
+}
+
+function doEternal() {
+  const reqEssence = 20;
+  if (state.transcendentEssence < reqEssence) return;
+
+  const gain = Math.floor(state.transcendentEssence / 10);
+  if (gain <= 0) return;
+
+  state.eternalEmbers += gain;
+  log(`You step into eternity and gain ${gain} Eternal Embers.`);
+
+  resetRun();
+  state.ascendantShards = 0;
+  state.transcendentEssence = 0;
+
+  state.unlocks.jobs = false;
+  state.unlocks.void = false;
+  state.unlocks.ascend = false;
+  state.unlocks.transcend = false;
+
+  buildUI();
+  updateUnlocks();
+  updatePrestigeInfo();
+  render();
+}
+
+/* ---------- RESET RUN ---------- */
+
+function resetRun() {
+  state.dust = 0;
+  state.fragments = 0;
+  state.echoes = 0;
+  state.cores = 0;
+  state.sigils = 0;
+  state.paradoxDust = 0;
+  state.riftEnergy = 0;
+  state.realityShards = 0;
+  state.voidCrystals = 0;
+  state.astralFibers = 0;
+  state.entropicMass = 0;
+  state.voidFavor = 0;
+
+  Object.values(state.skills).forEach(s => {
+    s.level = 0;
+    s.progress = 0;
+  });
+  Object.values(state.jobs).forEach(j => {
+    j.level = 0;
+    j.progress = 0;
+  });
+}
+
+/* ============================
+   ===== END OF PART 2A =======
+   ============================ */
+/* ============================
+   ======== PART 2B ===========
+   ============================ */
+
+function doAscend() {
+  const skillLv = totalSkillLevels();
+  const jobLv = totalJobLevels();
+  const vf = state.voidFavor;
+
+  const ascReq = { skills: 160, jobs: 80, favor: 200 };
+  if (skillLv < ascReq.skills || jobLv < ascReq.jobs || vf < ascReq.favor) return;
+
+  const baseGain = (skillLv + jobLv) / 40 + vf / 200;
+  const gain = Math.floor(baseGain * getTranscendAscGainMult());
+  if (gain <= 0) return;
+
+  state.ascendantShards += gain;
+  log(`You ascend and gain ${gain} Ascendant Shards.`);
+
+  resetRun();
+  state.unlocks.jobs = false;
+  state.unlocks.void = false;
+
+  buildUI();
+  updateUnlocks();
+  updatePrestigeInfo();
+  render();
+}
+
+function doTranscend() {
+  const reqShards = 50;
+  if (state.ascendantShards < reqShards) return;
+
+  const gain = Math.floor(state.ascendantShards / 25);
+  if (gain <= 0) return;
+
+  state.transcendentEssence += gain;
+  log(`Reality folds. You gain ${gain} Transcendent Essence.`);
+
+  resetRun();
+  state.ascendantShards = 0;
+
+  state.unlocks.jobs = false;
+  state.unlocks.void = false;
+  state.unlocks.ascend = false;
+
+  buildUI();
+  updateUnlocks();
+  updatePrestigeInfo();
+  render();
+}
+
+function doEternal() {
+  const reqEssence = 20;
+  if (state.transcendentEssence < reqEssence) return;
+
+  const gain = Math.floor(state.transcendentEssence / 10);
+  if (gain <= 0) return;
+
+  state.eternalEmbers += gain;
+  log(`You step into eternity and gain ${gain} Eternal Embers.`);
+
+  resetRun();
+  state.ascendantShards = 0;
+  state.transcendentEssence = 0;
+
+  state.unlocks.jobs = false;
+  state.unlocks.void = false;
+  state.unlocks.ascend = false;
+  state.unlocks.transcend = false;
+
+  buildUI();
+  updateUnlocks();
+  updatePrestigeInfo();
+  render();
+}
+
+function resetRun() {
+  state.dust = 0;
+  state.fragments = 0;
+  state.echoes = 0;
+  state.cores = 0;
+  state.sigils = 0;
+  state.paradoxDust = 0;
+  state.riftEnergy = 0;
+  state.realityShards = 0;
+  state.voidCrystals = 0;
+  state.astralFibers = 0;
+  state.entropicMass = 0;
+  state.voidFavor = 0;
+
+  Object.values(state.skills).forEach(s => {
+    s.level = 0;
+    s.progress = 0;
+  });
+  Object.values(state.jobs).forEach(j => {
+    j.level = 0;
+    j.progress = 0;
+  });
+}
+
+/* ============================
+   ===== END OF PART 2B =======
+   ============================ */
+/* ============================
+   ========= PART 2C ==========
+   ============================ */
+
+/* ---------- TICK LOOP ---------- */
+
+let lastTime = performance.now();
+
+function tick() {
+  const now = performance.now();
+  const dt = now - lastTime;
+  lastTime = now;
+
+  const globalSpeed = getGlobalSpeedMult();
+  const skillSpeed = getSkillSpeedMult();
+  const jobYield = getJobYieldMult();
+  const allGain = getAllGainMult();
+
+  // SKILLS
+  skillDefs.forEach(def => {
+    const s = state.skills[def.id];
+    if (!skillUnlocked(def)) return;
+
+    const duration = def.baseDuration * Math.pow(1 + def.durationGrowth, s.level);
+    const effective = duration / (globalSpeed * skillSpeed);
+
+    s.progress += dt;
+    if (s.progress >= effective) {
+      s.progress -= effective;
+      s.level++;
+
+      // Echo bonus from Memory Weaving
+      if (def.id === "memory_weaving") {
+        state.echoes += 1 * allGain;
+      }
+    }
+  });
+
+  // JOBS
+  jobDefs.forEach(def => {
+    if (!jobUnlocked(def)) return;
+    const j = state.jobs[def.id];
+
+    const duration = def.baseDuration * Math.pow(1 + def.durationGrowth, j.level);
+    const effective = duration / globalSpeed;
+
+    j.progress += dt;
+    if (j.progress >= effective) {
+      j.progress -= effective;
+      j.level++;
+
+      const baseGain = 1 * jobYield * allGain;
+      state[def.resource] += baseGain;
+    }
+  });
+
+  // AUTO-FEED VOID
+  if (el.autoVoid.checked && state.dust >= 10) {
+    feedVoid();
+  }
+
+  updateUnlocks();
+  updatePrestigeInfo();
+  render();
+
+  requestAnimationFrame(tick);
+}
+
+/* ---------- VOID FEED ---------- */
+
+function feedVoid() {
+  if (state.dust < 10) return;
+  state.dust -= 10;
+
+  const gain = 1 * getVoidGainMult();
+  state.voidFavor += gain;
+
+  const rect = el.feedVoidBtn.getBoundingClientRect();
+  floatText(`+${gain.toFixed(1)} VF`, rect, "#8b5cf6");
+}
+
+/* ---------- RENDER ---------- */
+
+function render() {
+  el.time.textContent = `t=${Math.floor(state.time)}s`;
+
+  el.dust.textContent = Math.floor(state.dust);
+  el.fragments.textContent = Math.floor(state.fragments);
+  el.echoes.textContent = Math.floor(state.echoes);
+  el.cores.textContent = Math.floor(state.cores);
+  el.sigils.textContent = Math.floor(state.sigils);
+  el.paradoxDust.textContent = Math.floor(state.paradoxDust);
+  el.riftEnergy.textContent = Math.floor(state.riftEnergy);
+  el.realityShards.textContent = Math.floor(state.realityShards);
+  el.voidCrystals.textContent = Math.floor(state.voidCrystals);
+  el.astralFibers.textContent = Math.floor(state.astralFibers);
+  el.entropicMass.textContent = Math.floor(state.entropicMass);
+
+  el.voidFavor.textContent = state.voidFavor.toFixed(1);
+  el.voidMult.textContent = `x${getVoidMult().toFixed(2)}`;
+
+  el.shards.textContent = state.ascendantShards;
+  el.essence.textContent = state.transcendentEssence;
+  el.embers.textContent = state.eternalEmbers;
+
+  // SKILL BARS
+  skillDefs.forEach(def => {
+    const s = state.skills[def.id];
+    const row = s._row;
+    if (!row) return;
+
+    const unlocked = skillUnlocked(def);
+    row.style.opacity = unlocked ? "1" : "0.3";
+
+    const duration = def.baseDuration * Math.pow(1 + def.durationGrowth, s.level);
+    const effective = duration / (getGlobalSpeedMult() * getSkillSpeedMult());
+    const pct = Math.min(100, (s.progress / effective) * 100);
+
+    row._fill.style.width = pct + "%";
+    row._label.textContent = pct.toFixed(0) + "%";
+    row._meta.textContent = `Lv ${s.level}`;
+    row._info.textContent = `Lv ${s.level}`;
+  });
+
+  // JOB BARS
+  jobDefs.forEach(def => {
+    const j = state.jobs[def.id];
+    const row = j._row;
+    if (!row) return;
+
+    const unlocked = jobUnlocked(def);
+    row.style.opacity = unlocked ? "1" : "0.3";
+
+    const duration = def.baseDuration * Math.pow(1 + def.durationGrowth, j.level);
+    const effective = duration / getGlobalSpeedMult();
+    const pct = Math.min(100, (j.progress / effective) * 100);
+
+    row._fill.style.width = pct + "%";
+    row._label.textContent = pct.toFixed(0) + "%";
+    row._meta.textContent = `Lv ${j.level}`;
+    row._info.textContent = `Lv ${j.level}`;
+  });
+}
+
+/* ---------- SAVE / LOAD ---------- */
 
 function saveGame() {
   localStorage.setItem(SAVE_KEY, JSON.stringify(state));
@@ -1168,101 +1737,63 @@ function saveGame() {
 function loadGame() {
   const raw = localStorage.getItem(SAVE_KEY);
   if (!raw) return;
-  const loaded = JSON.parse(raw);
-  state = Object.assign({}, state, loaded);
-  initState();
-  buildUI();
-  updateUnlocks();
-  updatePrestigeInfo();
-  render();
-  log("Game loaded.");
+  try {
+    const data = JSON.parse(raw);
+    Object.assign(state, data);
+    initState();
+    buildUI();
+    updateUnlocks();
+    updatePrestigeInfo();
+    render();
+    log("Game loaded.");
+  } catch (e) {
+    console.error(e);
+    log("Save corrupted.");
+  }
 }
 
-function wipeGame() {
+function wipeSave() {
   localStorage.removeItem(SAVE_KEY);
   location.reload();
 }
 
-// ---------- TABS & BUTTONS ----------
+/* ---------- TABS ---------- */
 
-function setupTabs() {
-  const tabs = document.querySelectorAll(".tab-btn");
-  const panels = {
-    skills: document.getElementById("tab-skills"),
-    jobs: document.getElementById("tab-jobs"),
-    void: document.getElementById("tab-void"),
-    ascend: document.getElementById("tab-ascend"),
-    transcend: document.getElementById("tab-transcend"),
-    eternal: document.getElementById("tab-eternal")
-  };
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const tab = btn.dataset.tab;
+    if (btn.classList.contains("locked")) return;
 
-  tabs.forEach(btn => {
-    btn.addEventListener("click", () => {
-      if (btn.classList.contains("locked")) return;
-      const id = btn.dataset.tab;
-      tabs.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      Object.values(panels).forEach(p => p.classList.remove("active"));
-      panels[id].classList.add("active");
-    });
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.getElementById(`tab-${tab}`).classList.add("active");
   });
-}
+});
 
-function setupButtons() {
-  el.feedVoidBtn.addEventListener("click", () => {
-    const gain = 1 * getGlobalSpeedMult();
-    state.dust += gain;
-    floatText("+" + gain.toFixed(0) + " Dust", el.feedVoidBtn.getBoundingClientRect());
-  });
+/* ---------- BUTTONS ---------- */
 
-  el.saveBtn.addEventListener("click", saveGame);
-  el.loadBtn.addEventListener("click", () => {
-    loadGame();
-  });
-  el.wipeBtn.addEventListener("click", () => {
-    if (confirm("Wipe save?")) wipeGame();
-  });
+el.feedVoidBtn.addEventListener("click", feedVoid);
+el.ascendBtn.addEventListener("click", doAscend);
+el.transcendBtn.addEventListener("click", doTranscend);
+el.eternalBtn.addEventListener("click", doEternal);
 
-  el.ascendBtn.addEventListener("click", () => {
-    if (!el.ascendBtn.disabled && confirm("Ascend and reset this run?")) {
-      doAscend();
-    }
-  });
+el.saveBtn.addEventListener("click", saveGame);
+el.loadBtn.addEventListener("click", loadGame);
+el.wipeBtn.addEventListener("click", wipeSave);
 
-  el.transcendBtn.addEventListener("click", () => {
-    if (!el.transcendBtn.disabled && confirm("Transcend and reset deeper?")) {
-      doTranscend();
-    }
-  });
-
-  el.eternalBtn.addEventListener("click", () => {
-    if (!el.eternalBtn.disabled && confirm("Enter Eternity and reset almost everything?")) {
-      doEternal();
-    }
-  });
-}
-
-// ---------- MAIN LOOP ----------
-
-function startLoop() {
-  let last = performance.now();
-  function frame(now) {
-    const dt = now - last;
-    last = now;
-    tick(dt);
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-}
-
-// ---------- BOOT ----------
+/* ---------- BOOT ---------- */
 
 initState();
 buildUI();
-setupTabs();
-setupButtons();
 loadGame();
 updateUnlocks();
 updatePrestigeInfo();
 render();
-startLoop();
+
+requestAnimationFrame(tick);
+
+/* ============================
+   ===== END OF PART 2C =======
+   ============================ */
