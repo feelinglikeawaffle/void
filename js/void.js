@@ -1,51 +1,43 @@
 /* ============================
-   VOID — Top‑Tier Resource & Multipliers
+   VOID SYSTEM
    ============================ */
-
 
 /* ----------------------------
    Build Void UI
    ---------------------------- */
 
 function buildVoidUI() {
-  el.voidPanel.innerHTML = "";
+  const root = el.voidActions;
+  if (!root) return;
 
-  const vf = document.createElement("div");
-  vf.className = "void-row";
-  vf.textContent = `Void Favor: ${format(state.voidFavor)}`;
+  root.innerHTML = `
+    <button id="gain-dust-btn">Gain 1 Dust</button>
 
-  const mult = document.createElement("div");
-  mult.className = "void-row";
-  mult.textContent = `Void Multiplier: x${format(state.voidGainMult)}`;
+    <div class="void-stat">
+      <span>Void Favor:</span>
+      <span id="void-favor-value">0</span>
+    </div>
 
-  const shards = document.createElement("div");
-  shards.className = "void-row";
-  shards.textContent = `Ascendant Shards: ${format(state.ascendantShards)}`;
+    <div class="void-stat">
+      <span>Void Multiplier:</span>
+      <span id="void-mult-value">1.00x</span>
+    </div>
+  `;
 
-  const essence = document.createElement("div");
-  essence.className = "void-row";
-  essence.textContent = `Transcendent Essence: ${format(state.transcendentEssence)}`;
-
-  const embers = document.createElement("div");
-  embers.className = "void-row";
-  embers.textContent = `Eternal Embers: ${format(state.eternalEmbers)}`;
-
-  el.voidPanel.appendChild(vf);
-  el.voidPanel.appendChild(mult);
-  el.voidPanel.appendChild(shards);
-  el.voidPanel.appendChild(essence);
-  el.voidPanel.appendChild(embers);
+  document.getElementById("gain-dust-btn").addEventListener("click", () => {
+    state.dust += 1;
+    logMessage("Gained 1 Dust.");
+  });
 }
 
 
 /* ----------------------------
-   Void Tick Logic
+   Tick — Void Logic
    ---------------------------- */
-/* Nothing to do here anymore — refinery produces Void Favor.
-   This function exists for future rituals or void mechanics. */
 
 function tickVoid(dt) {
-  // Reserved for future void rituals, corruption, entropy storms, etc.
+  // Placeholder for future void mechanics
+  // Currently no time-based void generation
 }
 
 
@@ -54,11 +46,8 @@ function tickVoid(dt) {
    ---------------------------- */
 
 function renderVoid() {
-  // Update the numbers live
-  el.voidFavor.textContent = format(state.voidFavor);
-  el.voidMult.textContent = "x" + format(state.voidGainMult);
+  if (!el.voidFavor || !el.voidMult) return;
 
-  el.shards.textContent = format(state.ascendantShards);
-  el.essence.textContent = format(state.transcendentEssence);
-  el.embers.textContent = format(state.eternalEmbers);
+  el.voidFavor.textContent = state.voidFavor.toFixed(0);
+  el.voidMult.textContent = state.voidGainMult.toFixed(2) + "x";
 }
