@@ -1,110 +1,64 @@
 /* ============================
-   VOID — Feeding, UI, Logic
+   VOID — Top‑Tier Resource & Multipliers
    ============================ */
 
 
 /* ----------------------------
-   +1 Dust Button (Top Panel)
-   ---------------------------- */
-
-function feedVoidDustButton() {
-  state.dust += 1;
-
-  const rect = el.feedDustBtn.getBoundingClientRect();
-  floatText("+1 Dust", rect, "#facc15");
-
-  render();
-}
-
-el.feedDustBtn.addEventListener("click", feedVoidDustButton);
-
-
-/* ----------------------------
-   10 Dust → Void Favor
-   ---------------------------- */
-
-function feedVoid() {
-  if (state.dust < 10) return;
-
-  state.dust -= 10;
-
-  const gain = 1 * getVoidGainMult();
-  state.voidFavor += gain;
-
-  // Floating text from the Void Feed button
-  if (el.voidFeedBtn) {
-    const rect = el.voidFeedBtn.getBoundingClientRect();
-    floatText(`+${gain.toFixed(1)} VF`, rect, "#8b5cf6");
-  }
-
-  render();
-}
-
-
-/* ----------------------------
-   Build Void Actions UI
+   Build Void UI
    ---------------------------- */
 
 function buildVoidUI() {
-  el.voidActions.innerHTML = "";
+  el.voidPanel.innerHTML = "";
 
-  // Container row
-  const row = document.createElement("div");
-  row.className = "void-row";
+  const vf = document.createElement("div");
+  vf.className = "void-row";
+  vf.textContent = `Void Favor: ${format(state.voidFavor)}`;
 
-  // Left label
-  const left = document.createElement("div");
-  left.className = "void-label";
-  left.textContent = "Feed the Void (10 Dust → Void Favor)";
+  const mult = document.createElement("div");
+  mult.className = "void-row";
+  mult.textContent = `Void Multiplier: x${format(state.voidGainMult)}`;
 
-  // Right button
-  const right = document.createElement("div");
-  right.className = "void-button-container";
+  const shards = document.createElement("div");
+  shards.className = "void-row";
+  shards.textContent = `Ascendant Shards: ${format(state.ascendantShards)}`;
 
-  const btn = document.createElement("button");
-  btn.className = "void-feed-btn";
-  btn.textContent = "Feed";
-  btn.addEventListener("click", feedVoid);
+  const essence = document.createElement("div");
+  essence.className = "void-row";
+  essence.textContent = `Transcendent Essence: ${format(state.transcendentEssence)}`;
 
-  // Store reference for floating text
-  el.voidFeedBtn = btn;
+  const embers = document.createElement("div");
+  embers.className = "void-row";
+  embers.textContent = `Eternal Embers: ${format(state.eternalEmbers)}`;
 
-  right.appendChild(btn);
-  row.appendChild(left);
-  row.appendChild(right);
-
-  el.voidActions.appendChild(row);
+  el.voidPanel.appendChild(vf);
+  el.voidPanel.appendChild(mult);
+  el.voidPanel.appendChild(shards);
+  el.voidPanel.appendChild(essence);
+  el.voidPanel.appendChild(embers);
 }
 
 
 /* ----------------------------
-   Auto-Feed Logic
+   Void Tick Logic
    ---------------------------- */
+/* Nothing to do here anymore — refinery produces Void Favor.
+   This function exists for future rituals or void mechanics. */
 
-function autoFeedVoid() {
-  if (!el.autoVoid) return;
-  if (!el.autoVoid.checked) return;
-  if (state.dust < 10) return;
-
-  feedVoid();
+function tickVoid(dt) {
+  // Reserved for future void rituals, corruption, entropy storms, etc.
 }
 
 
 /* ----------------------------
-   Void Multiplier Rendering
-   ---------------------------- */
-
-function updateVoidMultiplier() {
-  const mult = 1 + state.voidFavor * 0.01;
-  el.voidMult.textContent = "x" + mult.toFixed(2);
-}
-
-
-/* ----------------------------
-   Render Void Panel
+   Render Void UI
    ---------------------------- */
 
 function renderVoid() {
+  // Update the numbers live
   el.voidFavor.textContent = format(state.voidFavor);
-  updateVoidMultiplier();
+  el.voidMult.textContent = "x" + format(state.voidGainMult);
+
+  el.shards.textContent = format(state.ascendantShards);
+  el.essence.textContent = format(state.transcendentEssence);
+  el.embers.textContent = format(state.eternalEmbers);
 }
