@@ -4,7 +4,7 @@
 
 
 /* ----------------------------
-   Save / Load / Wipe
+   Save / Load
    ---------------------------- */
 
 function saveGame() {
@@ -20,30 +20,40 @@ function loadGame() {
     return;
   }
 
-  const loaded = JSON.parse(data);
+  try {
+    const loaded = JSON.parse(data);
 
-  // Merge loaded state into current state
-  Object.assign(state, loaded);
+    // Merge loaded state into current state
+    for (const k in loaded) {
+      if (typeof loaded[k] === "object" && state[k] !== null) {
+        Object.assign(state[k], loaded[k]);
+      } else {
+        state[k] = loaded[k];
+      }
+    }
 
-  logMessage("Game loaded.");
-  render();
+    recalcAllMultipliers();
+    logMessage("Game loaded.");
+  } catch (e) {
+    console.error("Load error:", e);
+    logMessage("Failed to load save.");
+  }
 }
 
-function wipeGame() {
-  if (!confirm("Are you sure you want to wipe your save?")) return;
+function wipeSave() {
   localStorage.removeItem("voidGameSave");
   location.reload();
 }
 
 
 /* ----------------------------
-   Hook Up Save Buttons
+   Hook Save Buttons
    ---------------------------- */
 
 function setupSaveButtons() {
-  el.saveBtn.addEventListener("click", saveGame);
-  el.loadBtn.addEventListener("click", loadGame);
-  el.wipeBtn.addEventListener("click", wipeGame);
+  document.getElementById("save-btn").addEventListener("click", saveGame);
+  document.getElementById("load-btn").addEventListener("click", loadGame);
+  document.getElementById("wipe-btn").addEventListener("click", wipeSave);
 }
 
 
@@ -54,9 +64,12 @@ function setupSaveButtons() {
 function init() {
   setupTabs();
   setupSaveButtons();
-  buildUI();
-  render();
-  tick();
+
+  loadGame();       // Load save if exists
+  buildUI();        // Build all UI elements
+  render();         // Initial render
+
+  tick();           // Start main loop
 }
 
 
@@ -64,4 +77,4 @@ function init() {
    Start Game
    ---------------------------- */
 
-init();
+window.addEventListener("load", init);
