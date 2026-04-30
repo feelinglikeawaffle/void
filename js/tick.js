@@ -5,28 +5,23 @@
 let lastTime = performance.now();
 
 
+/* ----------------------------
+   Main Tick Function
+   ---------------------------- */
+
 function tick() {
   const now = performance.now();
-  const dt = now - lastTime;
+  const dt = now - lastTime;   // milliseconds since last frame
   lastTime = now;
 
-  /* ----------------------------
-     Update Systems
-     ---------------------------- */
-
-  tickSkills(dt);
+  // Core systems
   tickJobs(dt);
-  autoFeedVoid();
+  tickSkills(dt);
+  tickRefinery(dt);
+  tickVoid(dt);
 
-  /* ----------------------------
-     Render Everything
-     ---------------------------- */
-
+  // Render everything
   render(dt);
-
-  /* ----------------------------
-     Continue Loop
-     ---------------------------- */
 
   requestAnimationFrame(tick);
 }
