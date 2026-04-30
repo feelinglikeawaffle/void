@@ -1,5 +1,5 @@
 /* ============================
-   STATE — Game Data
+   STATE — Core Game Data
    ============================ */
 
 const state = {
@@ -32,26 +32,44 @@ const state = {
   refinerySpeedMult: 1,
   refineryEfficiencyMult: 1,
 
-  /* ----- Jobs / Entities ----- */
-  jobs: {
-    worker: { progress: 0 },
-    miner: { progress: 0 },
-    harvester: { progress: 0 }
+  /* ============================
+     ENTITIES (NEW JOB SYSTEM)
+     ============================ */
+  entities: {
+    list: [],            // hired entities
+    hirePool: [],        // 6 random entities to choose from
+    nextRefreshAt: 0,    // timestamp for next refresh
+    hireCostMult: 1      // increases by 5% per hire
   },
 
-  /* ----- Skills ----- */
+  /* ============================
+     SKILLS (AUTO-TRAINING)
+     ============================ */
   skills: {
-    efficiency: { level: 0, progress: 0 },
-    focus: { level: 0, progress: 0 },
-    insight: { level: 0, progress: 0 }
+    // Only starting skill is created here.
+    // Others unlock dynamically.
+    focus: { level: 0, xp: 0 }
   },
 
-  /* ----- Shop Purchases ----- */
+  /* ============================
+     SHOP PURCHASES
+     ============================ */
   shop: {
     resource: {},
     void: {},
     ascend: {},
     transcend: {},
     eternal: {}
+  },
+
+  /* ============================
+     UNLOCK FLAGS
+     ============================ */
+  unlocks: {
+    void: false,
+    shop: false,
+    ascend: false,
+    transcend: false,
+    eternal: false
   }
 };
