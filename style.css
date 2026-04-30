@@ -76,24 +76,11 @@ header h1 {
 #void-name {
   font-size: 1.1rem;
   margin-bottom: 6px;
+  color: var(--accent-light);
 }
 
 #void-panel-right {
   text-align: right;
-}
-
-#feed-dust-btn {
-  background: var(--accent);
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  margin-bottom: 8px;
-}
-
-#feed-dust-btn:hover {
-  background: var(--accent-light);
 }
 
 #resource-line {
@@ -157,27 +144,26 @@ header h1 {
   margin-bottom: 4px;
 }
 
-.skill-level,
-.job-level {
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-
 .skill-bar,
 .job-bar {
   width: 100%;
-  height: 8px;
+  height: 10px;
   background: var(--panel-light);
   border-radius: 4px;
   overflow: hidden;
 }
 
-.skill-fill,
+.skill-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent-light);
+  transition: width 0.1s linear;
+}
+
 .job-fill {
   height: 100%;
   width: 0%;
-  background: var(--accent);
+  background: #facc15;
   transition: width 0.1s linear;
 }
 
@@ -186,11 +172,6 @@ header h1 {
    VOID TAB
    ============================ */
 
-.checkbox-row {
-  margin-bottom: 12px;
-  font-size: 0.9rem;
-}
-
 .void-row {
   background: var(--panel);
   padding: 10px;
@@ -198,19 +179,6 @@ header h1 {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
-}
-
-.void-feed-btn {
-  background: var(--accent);
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-}
-
-.void-feed-btn:hover {
-  background: var(--accent-light);
 }
 
 
@@ -239,6 +207,7 @@ header h1 {
 .shop-cost {
   font-size: 0.8rem;
   margin-bottom: 6px;
+  color: #facc15;
 }
 
 .shop-row button {
@@ -260,10 +229,9 @@ header h1 {
    PRESTIGE PANELS
    ============================ */
 
-#tab-ascend,
-#tab-transcend,
-#tab-eternal {
-  font-size: 0.9rem;
+#tab-prestige h3 {
+  margin-top: 20px;
+  color: var(--accent-light);
 }
 
 #ascend-btn,
@@ -332,4 +300,19 @@ button.danger {
 
 button.danger:hover {
   background: #ff6666;
+}
+
+
+/* ============================
+   LOG
+   ============================ */
+
+#log {
+  background: var(--panel);
+  border-radius: 6px;
+  padding: 10px;
+  height: 150px;
+  overflow-y: auto;
+  font-size: 0.8rem;
+  border: 1px solid var(--panel-light);
 }
