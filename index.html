@@ -5,129 +5,112 @@
   <title>Void Incremental</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <div id="app">
-    <header>
-      <div>
-        <h1>Void Incremental</h1>
-        <div class="sub">Dust → Entities → Void → Beyond</div>
-      </div>
-      <div id="header-resources">
-        <!-- optional live counters later -->
-      </div>
-    </header>
 
-    <!-- Void summary panel -->
-    <div id="void-panel">
-      <div id="void-panel-left">
-        <div id="void-name">The Void</div>
-        <div id="resource-line">
-          Void Favor: <span id="void-favor-value">0</span><br>
-          Void Multiplier: <span id="void-mult-value">x1.00</span>
-        </div>
-      </div>
-      <div id="void-panel-right">
-        <div>Ascendant Shards: <span id="shard-count">0</span></div>
-        <div>Transcendent Essence: <span id="essence-count">0</span></div>
-        <div>Eternal Embers: <span id="ember-count">0</span></div>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div id="tabs">
-      <button class="tab-btn active" data-tab="skills">Skills</button>
-      <button class="tab-btn" data-tab="jobs">Jobs</button>
-      <button class="tab-btn" data-tab="void">Void</button>
-      <button class="tab-btn" data-tab="shop">Shop</button>
-      <button class="tab-btn" data-tab="prestige">Prestige</button>
-    </div>
-
-    <!-- Tab: Skills -->
-    <div id="tab-skills" class="tab active">
-      <h2>Skills</h2>
-      <div id="skills-container"></div>
-    </div>
-
-    <!-- Tab: Jobs -->
-    <div id="tab-jobs" class="tab">
-      <h2>Entities</h2>
-      <div id="jobs-container"></div>
-    </div>
-
-    <!-- Tab: Void -->
-    <div id="tab-void" class="tab">
-      <h2>Void</h2>
-      <div id="void-actions"></div>
-    </div>
-
-    <!-- Tab: Shop -->
-    <div id="tab-shop" class="tab">
-      <h2>Shop</h2>
-
-      <h3>Resource Upgrades</h3>
-      <div id="shop-resource"></div>
-
-      <h3>Void Upgrades</h3>
-      <div id="shop-void"></div>
-
-      <h3>Ascend Upgrades</h3>
-      <div id="shop-ascend"></div>
-
-      <h3>Transcend Upgrades</h3>
-      <div id="shop-transcend"></div>
-
-      <h3>Eternal Upgrades</h3>
-      <div id="shop-eternal"></div>
-    </div>
-
-    <!-- Tab: Prestige -->
-    <div id="tab-prestige" class="tab">
-      <h2>Prestige</h2>
-
-      <div id="tab-ascend">
-        <h3>Ascend</h3>
-        <div id="ascend-info">Requires 1000 Void Favor</div>
-        <button id="ascend-btn">Ascend</button>
-      </div>
-
-      <div id="tab-transcend">
-        <h3>Transcend</h3>
-        <div id="transcend-info">Requires 10000 Void Favor</div>
-        <button id="transcend-btn">Transcend</button>
-      </div>
-
-      <div id="tab-eternal">
-        <h3>Eternal</h3>
-        <div id="eternal-info">Requires 100000 Void Favor</div>
-        <button id="eternal-btn">Eternal</button>
-      </div>
-    </div>
-
-    <!-- Log + Save Controls -->
-    <div id="footer">
-      <button id="save-btn">Save</button>
-      <button id="load-btn">Load</button>
-      <button id="wipe-btn" class="danger">Wipe</button>
-    </div>
-
-    <div id="log"></div>
+  <!-- ============================
+       TOP NAV / TABS
+       ============================ -->
+  <div id="top-bar">
+    <button class="tab-btn active" data-tab="skills">Skills</button>
+    <button class="tab-btn" data-tab="jobs">Entities</button>
+    <button class="tab-btn" data-tab="void">Void</button>
+    <button class="tab-btn" data-tab="shop">Shop</button>
+    <button class="tab-btn" data-tab="prestige">Prestige</button>
   </div>
 
-  <!-- Scripts -->
-  <script src="js/state.js"></script>
-  <script src="js/elements.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/entityGenerator.js"></script>
 
-  <script src="js/skills.js"></script>
-  <script src="js/jobs.js"></script>
-  <script src="js/refinery.js"></script>
-  <script src="js/void.js"></script>
-  <script src="js/shop.js"></script>
-  <script src="js/prestige.js"></script>
+  <!-- ============================
+       TABS
+       ============================ -->
 
-  <script src="js/ui.js"></script>
-  <script src="js/tick.js"></script>
-  <script src="js/main.js"></script>
+  <!-- Skills -->
+  <div id="tab-skills" class="tab active">
+    <h2>Skills</h2>
+    <div id="skills-container"></div>
+  </div>
+
+  <!-- Jobs / Entities -->
+  <div id="tab-jobs" class="tab">
+    <h2>Entities</h2>
+    <div id="jobs-container"></div>
+  </div>
+
+  <!-- Void -->
+  <div id="tab-void" class="tab">
+    <h2>Void</h2>
+    <div id="void-actions"></div>
+  </div>
+
+  <!-- Shop -->
+  <div id="tab-shop" class="tab">
+    <h2>Shop</h2>
+
+    <h3>Resource Upgrades</h3>
+    <div id="shop-resource"></div>
+
+    <h3>Void Upgrades</h3>
+    <div id="shop-void"></div>
+
+    <h3>Ascend Upgrades</h3>
+    <div id="shop-ascend"></div>
+
+    <h3>Transcend Upgrades</h3>
+    <div id="shop-transcend"></div>
+
+    <h3>Eternal Upgrades</h3>
+    <div id="shop-eternal"></div>
+  </div>
+
+  <!-- Prestige -->
+  <div id="tab-prestige" class="tab">
+    <h2>Prestige</h2>
+
+    <div class="prestige-block">
+      <div id="ascend-info">Ascendant Shards: 0</div>
+      <button id="ascend-btn">Ascend</button>
+    </div>
+
+    <div class="prestige-block">
+      <div id="transcend-info">Transcendent Essence: 0</div>
+      <button id="transcend-btn">Transcend</button>
+    </div>
+
+    <div class="prestige-block">
+      <div id="eternal-info">Eternal Embers: 0</div>
+      <button id="eternal-btn">Eternal</button>
+    </div>
+  </div>
+
+
+  <!-- ============================
+       LOG PANEL
+       ============================ -->
+  <div id="log"></div>
+
+
+  <!-- ============================
+       HIRE MODAL (Created by JS)
+       ============================ -->
+  <!-- JS will inject #hire-modal here -->
+
+
+  <!-- ============================
+       SCRIPTS
+       ============================ -->
+  <script src="elements.js"></script>
+  <script src="state.js"></script>
+  <script src="skillDefs.js"></script>
+  <script src="entityGenerator.js"></script>
+  <script src="skills.js"></script>
+  <script src="jobs.js"></script>
+  <script src="void.js"></script>
+  <script src="shopDefs.js"></script>
+  <script src="shop.js"></script>
+  <script src="prestige.js"></script>
+  <script src="ui.js"></script>
+  <script src="tick.js"></script>
+  <script src="main.js"></script>
+
 </body>
 </html>
