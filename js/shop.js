@@ -1,178 +1,113 @@
 /* ============================
-   SHOP — Upgrades & UI
+   SHOP SYSTEM
    ============================ */
 
-
 /* ----------------------------
-   Shop Upgrade Definitions
+   Build Shop UI
    ---------------------------- */
 
-const shopDefs = {
-  resource: [
-    {
-      id: "job_speed_1",
-      name: "Faster Workers I",
-      desc: "+20% Job Speed",
-      cost: 100,
-      apply: () => state.jobSpeedMult *= 1.20
-    },
-    {
-      id: "job_yield_1",
-      name: "Stronger Tools I",
-      desc: "+20% Job Yield",
-      cost: 150,
-      apply: () => state.jobYieldMult *= 1.20
-    }
-  ],
-
-  void: [
-    {
-      id: "void_gain_1",
-      name: "Void Conduit I",
-      desc: "+25% Void Favor Gain",
-      cost: 200,
-      apply: () => state.voidGainMult *= 1.25
-    }
-  ],
-
-  ascend: [
-    {
-      id: "global_speed_1",
-      name: "Ascendant Flow I",
-      desc: "+10% Global Speed",
-      cost: 5,
-      apply: () => state.globalSpeedMult *= 1.10
-    }
-  ],
-
-  transcend: [
-    {
-      id: "refinery_speed_1",
-      name: "Essence Refinement I",
-      desc: "+20% Refinery Speed",
-      cost: 10,
-      apply: () => state.refinerySpeedMult *= 1.20
-    },
-    {
-      id: "refinery_eff_1",
-      name: "Essence Efficiency I",
-      desc: "+10% Refinery Efficiency",
-      cost: 15,
-      apply: () => state.refineryEfficiencyMult *= 1.10
-    }
-  ],
-
-  eternal: [
-    {
-      id: "all_gain_1",
-      name: "Eternal Flame I",
-      desc: "+5% Everything",
-      cost: 1,
-      apply: () => {
-        state.globalSpeedMult *= 1.05;
-        state.jobSpeedMult *= 1.05;
-        state.jobYieldMult *= 1.05;
-        state.refinerySpeedMult *= 1.05;
-        state.refineryEfficiencyMult *= 1.05;
-        state.voidGainMult *= 1.05;
-      }
-    }
-  ]
-};
-
-
-/* ----------------------------
-   Buy Upgrade
-   ---------------------------- */
-
-function buyUpgrade(category, def) {
-  const owned = state.shop[category][def.id];
-  if (owned) return;
-
-  let currency = null;
-  if (category === "resource") currency = "dust";
-  if (category === "void") currency = "voidFavor";
-  if (category === "ascend") currency = "ascendantShards";
-  if (category === "transcend") currency = "transcendentEssence";
-  if (category === "eternal") currency = "eternalEmbers";
-
-  if (state[currency] < def.cost) return;
-
-  state[currency] -= def.cost;
-  state.shop[category][def.id] = true;
-
-  def.apply();
-
-  render();
+function buildShopUI() {
+  buildShopCategory("resource", el.shopResource);
+  buildShopCategory("void", el.shopVoid);
+  buildShopCategory("ascend", el.shopAscend);
+  buildShopCategory("transcend", el.shopTranscend);
+  buildShopCategory("eternal", el.shopEternal);
 }
 
 
 /* ----------------------------
-   Build Shop Category UI
+   Build a Single Category
    ---------------------------- */
 
-function buildShopCategory(container, category, defs) {
-  container.innerHTML = "";
+function buildShopCategory(category, root) {
+  if (!root) return;
 
-  defs.forEach(def => {
-    const owned = state.shop[category][def.id];
+  root.innerHTML = "";
+
+  const items = shopDefs[category];
+  if (!items) return;
+
+  for (const id in items) {
+    const def = items[id];
 
     const row = document.createElement("div");
     row.className = "shop-row";
 
-    const name = document.createElement("div");
-    name.className = "shop-name";
-    name.textContent = def.name;
+    row.innerHTML = `
+      <div class="shop-name">${def.name}</div>
+      <div class="shop-desc">${def.desc}</div>
+      <button class="shop-buy-btn" id="shop-buy-${category}-${id}">
+        Buy (${def.cost} Dust)
+      </button>
+    `;
 
-    const desc = document.createElement("div");
-    desc.className = "shop-desc";
-    desc.textContent = def.desc;
+    root.appendChild(row);
 
-    const cost = document.createElement("div");
-    cost.className = "shop-cost";
-
-    // Currency label
-    let currencyName = "";
-    if (category === "resource") currencyName = "Dust";
-    if (category === "void") currencyName = "Void Favor";
-    if (category === "ascend") currencyName = "Ascendant Shards";
-    if (category === "transcend") currencyName = "Transcendent Essence";
-    if (category === "eternal") currencyName = "Eternal Embers";
-
-    cost.textContent = `Cost: ${def.cost} ${currencyName}`;
-
-    const btn = document.createElement("button");
-    btn.textContent = owned ? "Bought" : "Buy";
-    btn.disabled = owned;
-    btn.addEventListener("click", () => buyUpgrade(category, def));
-
-    row.appendChild(name);
-    row.appendChild(desc);
-    row.appendChild(cost);
-    row.appendChild(btn);
-
-    container.appendChild(row);
-  });
+    document
+      .getElementById(`shop-buy-${category}-${id}`)
+      .addEventListener("click", () => buyShopItem(category, id));
+  }
 }
 
 
 /* ----------------------------
-   Build Entire Shop UI
+   Purchase Logic
    ---------------------------- */
 
-function buildShopUI() {
-  buildShopCategory(el.shopResource, "resource", shopDefs.resource);
-  buildShopCategory(el.shopVoid, "void", shopDefs.void);
-  buildShopCategory(el.shopAscend, "ascend", shopDefs.ascend);
-  buildShopCategory(el.shopTranscend, "transcend", shopDefs.transcend);
-  buildShopCategory(el.shopEternal, "eternal", shopDefs.eternal);
+function buyShopItem(category, id) {
+  const def = shopDefs[category][id];
+  if (!def) return;
+
+  if (state.dust < def.cost) {
+    logMessage("Not enough Dust.");
+    return;
+  }
+
+  state.dust -= def.cost;
+
+  // Mark as purchased
+  state.shop[category][id] = true;
+
+  // Apply effect if defined
+  if (def.effect) {
+    def.effect();
+  }
+
+  logMessage(`Purchased: ${def.name}`);
 }
 
 
 /* ----------------------------
-   Render Shop
+   Render Shop UI
    ---------------------------- */
 
 function renderShop() {
-  buildShopUI();
+  renderShopCategory("resource", el.shopResource);
+  renderShopCategory("void", el.shopVoid);
+  renderShopCategory("ascend", el.shopAscend);
+  renderShopCategory("transcend", el.shopTranscend);
+  renderShopCategory("eternal", el.shopEternal);
+}
+
+function renderShopCategory(category, root) {
+  if (!root) return;
+
+  const items = shopDefs[category];
+  if (!items) return;
+
+  for (const id in items) {
+    const def = items[id];
+    const btn = document.getElementById(`shop-buy-${category}-${id}`);
+    if (!btn) continue;
+
+    const purchased = state.shop[category][id];
+
+    if (purchased) {
+      btn.textContent = "Purchased";
+      btn.disabled = true;
+    } else {
+      btn.textContent = `Buy (${def.cost} Dust)`;
+      btn.disabled = state.dust < def.cost;
+    }
+  }
 }
