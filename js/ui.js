@@ -1,85 +1,48 @@
 /* ============================
-   UI — Rendering & Tabs
+   UI
    ============================ */
 
-
-/* ----------------------------
-   Tabs
-   ---------------------------- */
-
 function setupTabs() {
-  el.tabButtons.forEach(btn => {
+  const buttons = document.querySelectorAll(".tab-btn");
+  const tabs = document.querySelectorAll(".tab");
+
+  buttons.forEach(btn => {
     btn.addEventListener("click", () => {
-      const tab = btn.dataset.tab;
+      const target = btn.getAttribute("data-tab");
 
-      // Unlock check
-      if (btn.classList.contains("locked")) return;
+      buttons.forEach(b => b.classList.remove("active"));
+      tabs.forEach(t => t.classList.remove("active"));
 
-      // Activate button
-      el.tabButtons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-
-      // Activate tab
-      el.tabs.forEach(t => t.classList.remove("active"));
-      document.getElementById(`tab-${tab}`).classList.add("active");
+      document.getElementById("tab-" + target).classList.add("active");
     });
   });
 }
 
-
-/* ----------------------------
-   Floating Text
-   ---------------------------- */
-
-function floatText(text, rect, color = "#fff") {
-  const div = document.createElement("div");
-  div.className = "float-text";
-  div.textContent = text;
-  div.style.left = rect.left + "px";
-  div.style.top = rect.top + "px";
-  div.style.color = color;
-
-  document.body.appendChild(div);
-
-  requestAnimationFrame(() => {
-    div.style.transform = "translateY(-40px)";
-    div.style.opacity = "0";
-  });
-
-  setTimeout(() => div.remove(), 800);
-}
-
-
-/* ----------------------------
-   Log Messages
-   ---------------------------- */
-
-function logMessage(msg) {
-  const line = document.createElement("div");
-  line.textContent = msg;
-  el.log.appendChild(line);
-  el.log.scrollTop = el.log.scrollHeight;
-}
-
-
-/* ----------------------------
-   Build All UI
-   ---------------------------- */
-
 function buildUI() {
-  buildSkillsUI();
-  buildJobsUI();
-  buildVoidUI();
+  // Skills, jobs, void, shop, prestige are built by their own modules
   buildShopUI();
-  setupPrestigeButtons();
 }
 
+function renderResources() {
+  document.getElementById("res-dust").textContent =
+    "Dust: " + state.resources.dust;
 
-/* ----------------------------
-   Render All UI
-   ---------------------------- */
+  document.getElementById("res-void").textContent =
+    "Void: " + state.resources.void;
 
-function render(dt = 0) {
+  document.getElementById("res-ascend").textContent =
+    "Ascendant Shards: " + state.resources.ascend;
+
+  document.getElementById("res-transcend").textContent =
+    "Transcendent Essence: " + state.resources.transcend;
+
+  document.getElementById("res-eternal").textContent =
+    "Eternal Embers: " + state.resources.eternal;
+}
+
+function render(dt) {
+  renderResources();
   renderSkills();
   renderJobs();
   renderVoid();
