@@ -9,7 +9,7 @@
 <body>
 
   <!-- ============================
-       TOP NAV / TABS + SAVE/LOAD
+       TOP NAV / TABS
        ============================ -->
   <div id="top-bar">
     <button class="tab-btn active" data-tab="skills">Skills</button>
@@ -17,10 +17,6 @@
     <button class="tab-btn" data-tab="void">Void</button>
     <button class="tab-btn" data-tab="shop">Shop</button>
     <button class="tab-btn" data-tab="prestige">Prestige</button>
-
-    <!-- Added for Option B -->
-    <button id="save-btn">Save</button>
-    <button id="load-btn">Load</button>
   </div>
 
 
@@ -28,25 +24,21 @@
        TABS
        ============================ -->
 
-  <!-- Skills -->
   <div id="tab-skills" class="tab active">
     <h2>Skills</h2>
     <div id="skills-container"></div>
   </div>
 
-  <!-- Jobs / Entities -->
   <div id="tab-jobs" class="tab">
     <h2>Entities</h2>
     <div id="jobs-container"></div>
   </div>
 
-  <!-- Void -->
   <div id="tab-void" class="tab">
     <h2>Void</h2>
     <div id="void-actions"></div>
   </div>
 
-  <!-- Shop -->
   <div id="tab-shop" class="tab">
     <h2>Shop</h2>
 
@@ -66,7 +58,6 @@
     <div id="shop-eternal"></div>
   </div>
 
-  <!-- Prestige -->
   <div id="tab-prestige" class="tab">
     <h2>Prestige</h2>
 
@@ -94,12 +85,6 @@
 
 
   <!-- ============================
-       HIRE MODAL (Created by JS)
-       ============================ -->
-  <!-- JS will inject #hire-modal here -->
-
-
-  <!-- ============================
        ERUDA DEBUG CONSOLE
        ============================ -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
@@ -120,7 +105,7 @@
   </script>
 
   <!-- ============================
-       GAME SCRIPTS (corrected paths)
+       GAME SCRIPTS
        ============================ -->
   <script src="js/elements.js"></script>
   <script src="js/state.js"></script>
