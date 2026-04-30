@@ -100,13 +100,20 @@
        ============================ -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>
-    // Initialize Eruda after page loads
     document.addEventListener("DOMContentLoaded", () => {
       eruda.init();
-      console.log("Eruda console loaded.");
+      console.log("ERUDA: Console initialized.");
     });
   </script>
 
+  <!-- ============================
+       GLOBAL ERROR TRAP
+       ============================ -->
+  <script>
+    window.onerror = function (msg, src, line, col, err) {
+      console.error("GLOBAL ERROR:", msg, "at", src + ":" + line + ":" + col);
+    };
+  </script>
 
   <!-- ============================
        GAME SCRIPTS
@@ -125,12 +132,20 @@
   <script src="tick.js"></script>
   <script src="main.js"></script>
 
-
+  <!-- ============================
+       SCRIPT LOAD VERIFICATION
+       ============================ -->
   <script>
-  console.log("INDEX: reached end of HTML, scripts should be loaded.");
-  console.log("INDEX: typeof buildUI =", typeof buildUI);
-  console.log("INDEX: typeof startGame =", typeof startGame);
-</script>
+    console.log("INDEX: Reached end of HTML.");
+
+    console.log("INDEX: typeof buildUI =", typeof buildUI);
+    console.log("INDEX: typeof startGame =", typeof startGame);
+    console.log("INDEX: typeof initGame =", typeof initGame);
+
+    console.log("INDEX: typeof state =", typeof state);
+    console.log("INDEX: typeof skillDefs =", typeof skillDefs);
+    console.log("INDEX: typeof generateEntity =", typeof generateEntity);
+  </script>
 
 </body>
 </html>
