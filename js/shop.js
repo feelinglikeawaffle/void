@@ -1,113 +1,78 @@
 /* ============================
-   SHOP SYSTEM
+   SHOP LOGIC
    ============================ */
 
-/* ----------------------------
-   Build Shop UI
-   ---------------------------- */
-
-function buildShopUI() {
-  buildShopCategory("resource", el.shopResource);
-  buildShopCategory("void", el.shopVoid);
-  buildShopCategory("ascend", el.shopAscend);
-  buildShopCategory("transcend", el.shopTranscend);
-  buildShopCategory("eternal", el.shopEternal);
+function getShopCost(upgrade, level) {
+  return Math.floor(upgrade.baseCost * Math.pow(1.5, level));
 }
 
+function buildShopCategory(containerId, categoryKey) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
 
-/* ----------------------------
-   Build a Single Category
-   ---------------------------- */
+  const defs = shopDefs[categoryKey];
+  if (!defs) return;
 
-function buildShopCategory(category, root) {
-  if (!root) return;
+  defs.forEach(upgrade => {
+    const div = document.createElement("div");
+    div.className = "shop-upgrade";
 
-  root.innerHTML = "";
+    const level = upgrade.level || 0;
+    const cost = getShopCost(upgrade, level);
+    const currencyName =
+      upgrade.currency.charAt(0).toUpperCase() + upgrade.currency.slice(1);
 
-  const items = shopDefs[category];
-  if (!items) return;
-
-  for (const id in items) {
-    const def = items[id];
-
-    const row = document.createElement("div");
-    row.className = "shop-row";
-
-    row.innerHTML = `
-      <div class="shop-name">${def.name}</div>
-      <div class="shop-desc">${def.desc}</div>
-      <button class="shop-buy-btn" id="shop-buy-${category}-${id}">
-        Buy (${def.cost} Dust)
+    div.innerHTML = `
+      <div class="shop-name">${upgrade.name}</div>
+      <div class="shop-desc">${upgrade.desc}</div>
+      <div class="shop-cost">Cost: ${cost} ${currencyName}</div>
+      <button class="shop-buy" data-id="${upgrade.id}" data-cat="${categoryKey}">
+        Buy
       </button>
     `;
 
-    root.appendChild(row);
+    container.appendChild(div);
+  });
 
-    document
-      .getElementById(`shop-buy-${category}-${id}`)
-      .addEventListener("click", () => buyShopItem(category, id));
-  }
+  container.querySelectorAll(".shop-buy").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      const cat = btn.getAttribute("data-cat");
+      buyShopUpgrade(cat, id);
+    });
+  });
 }
 
-
-/* ----------------------------
-   Purchase Logic
-   ---------------------------- */
-
-function buyShopItem(category, id) {
-  const def = shopDefs[category][id];
-  if (!def) return;
-
-  if (state.dust < def.cost) {
-    logMessage("Not enough Dust.");
-    return;
-  }
-
-  state.dust -= def.cost;
-
-  // Mark as purchased
-  state.shop[category][id] = true;
-
-  // Apply effect if defined
-  if (def.effect) {
-    def.effect();
-  }
-
-  logMessage(`Purchased: ${def.name}`);
+function buildShopUI() {
+  buildShopCategory("shop-resource", "resource");
+  buildShopCategory("shop-void", "void");
+  buildShopCategory("shop-ascend", "ascend");
+  buildShopCategory("shop-transcend", "transcend");
+  buildShopCategory("shop-eternal", "eternal");
 }
 
+function buyShopUpgrade(categoryKey, id) {
+  const defs = shopDefs[categoryKey];
+  if (!defs) return;
 
-/* ----------------------------
-   Render Shop UI
-   ---------------------------- */
+  const upgrade = defs.find(u => u.id === id);
+  if (!upgrade) return;
+
+  const level = upgrade.level || 0;
+  const cost = getShopCost(upgrade, level);
+
+  const resKey = upgrade.currency;
+  if (state.resources[resKey] === undefined) return;
+  if (state.resources[resKey] < cost) return;
+
+  state.resources[resKey] -= cost;
+  upgrade.level = level + 1;
+
+  upgrade.effect(state);
+
+  buildShopUI();
+}
 
 function renderShop() {
-  renderShopCategory("resource", el.shopResource);
-  renderShopCategory("void", el.shopVoid);
-  renderShopCategory("ascend", el.shopAscend);
-  renderShopCategory("transcend", el.shopTranscend);
-  renderShopCategory("eternal", el.shopEternal);
-}
-
-function renderShopCategory(category, root) {
-  if (!root) return;
-
-  const items = shopDefs[category];
-  if (!items) return;
-
-  for (const id in items) {
-    const def = items[id];
-    const btn = document.getElementById(`shop-buy-${category}-${id}`);
-    if (!btn) continue;
-
-    const purchased = state.shop[category][id];
-
-    if (purchased) {
-      btn.textContent = "Purchased";
-      btn.disabled = true;
-    } else {
-      btn.textContent = `Buy (${def.cost} Dust)`;
-      btn.disabled = state.dust < def.cost;
-    }
-  }
+  // currently static; rebuild only on buy
 }
