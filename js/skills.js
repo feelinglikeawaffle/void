@@ -1,5 +1,5 @@
 /* ============================
-   SKILLS — Logic & UI
+   SKILLS — Passive Buff Engines
    ============================ */
 
 
@@ -11,8 +11,6 @@ function buildSkillsUI() {
   el.skills.innerHTML = "";
 
   skillDefs.forEach(def => {
-    if (!skillUnlocked(def)) return;
-
     const s = state.skills[def.id];
 
     const row = document.createElement("div");
@@ -20,11 +18,7 @@ function buildSkillsUI() {
 
     const name = document.createElement("div");
     name.className = "skill-name";
-    name.textContent = def.name;
-
-    const level = document.createElement("div");
-    level.className = "skill-level";
-    level.textContent = "Lv " + s.level;
+    name.textContent = `${def.name} (Lv ${s.level})`;
 
     const bar = document.createElement("div");
     bar.className = "skill-bar";
@@ -36,11 +30,10 @@ function buildSkillsUI() {
     bar.appendChild(fill);
 
     row.appendChild(name);
-    row.appendChild(level);
     row.appendChild(bar);
 
-    // Store reference for rendering
-    s._ui = { level, fill };
+    // Store UI refs
+    s._ui = { name, fill };
 
     el.skills.appendChild(row);
   });
@@ -52,27 +45,26 @@ function buildSkillsUI() {
    ---------------------------- */
 
 function tickSkills(dt) {
-  const globalSpeed = getGlobalSpeedMult();
-  const skillSpeed = getSkillSpeedMult();
-  const allGain = getAllGainMult();
+  const globalSpeed = state.globalSpeedMult;
 
   skillDefs.forEach(def => {
-    if (!skillUnlocked(def)) return;
-
     const s = state.skills[def.id];
 
-    const duration = def.baseDuration * Math.pow(1 + def.durationGrowth, s.level);
-    const effective = duration / (globalSpeed * skillSpeed);
+    const effectiveDuration = def.baseDuration / globalSpeed;
 
     s.progress += dt;
 
-    if (s.progress >= effective) {
-      s.progress -= effective;
+    if (s.progress >= effectiveDuration) {
+      s.progress -= effectiveDuration;
       s.level++;
 
-      // Special effect: Memory Weaving gives Echoes
-      if (def.id === "memory_weaving") {
-        state.echoes += 1 * allGain;
+      // Apply the new level's effect
+      def.applyLevelEffect();
+
+      // Floating text
+      if (s._ui) {
+        const rect = s._ui.fill.getBoundingClientRect();
+        floatText(`Skill +1`, rect, "#a78bfa");
       }
     }
   });
@@ -84,22 +76,16 @@ function tickSkills(dt) {
    ---------------------------- */
 
 function renderSkills() {
-  skillDefs.forEach(def => {
-    if (!skillUnlocked(def)) return;
+  const globalSpeed = state.globalSpeedMult;
 
+  skillDefs.forEach(def => {
     const s = state.skills[def.id];
     if (!s._ui) return;
 
-    // Update level text
-    s._ui.level.textContent = "Lv " + s.level;
+    const effectiveDuration = def.baseDuration / globalSpeed;
+    const pct = Math.min(100, (s.progress / effectiveDuration) * 100);
 
-    // Update progress bar
-    const duration = def.baseDuration * Math.pow(1 + def.durationGrowth, s.level);
-    const globalSpeed = getGlobalSpeedMult();
-    const skillSpeed = getSkillSpeedMult();
-    const effective = duration / (globalSpeed * skillSpeed);
-
-    const pct = Math.min(100, (s.progress / effective) * 100);
     s._ui.fill.style.width = pct + "%";
+    s._ui.name.textContent = `${def.name} (Lv ${s.level})`;
   });
 }
