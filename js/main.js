@@ -2,24 +2,16 @@
    MAIN — Clean Initialization
    ============================ */
 
-/* ----------------------------
-   Initialize Game
-   ---------------------------- */
-
 function init() {
   console.log("INIT: Starting game initialization.");
 
-  setupTabs();     // From ui.js
-  buildUI();       // From ui.js
-  render();        // From ui.js
+  setupTabs();     // from ui.js
+  buildUI();       // from ui.js
+  render();        // from ui.js
 
-  tick();          // From tick.js
+  tick();          // from tick.js
 
   console.log("INIT: Game initialized successfully.");
 }
-
-/* ----------------------------
-   Start Game
-   ---------------------------- */
 
 window.addEventListener("load", init);
