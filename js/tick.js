@@ -4,7 +4,6 @@
 
 let lastTime = performance.now();
 
-
 /* ----------------------------
    Main Tick Function
    ---------------------------- */
@@ -17,7 +16,6 @@ function tick() {
   // Core systems
   tickJobs(dt);
   tickSkills(dt);
-  tickRefinery(dt);
   tickVoid(dt);
 
   // Render everything
