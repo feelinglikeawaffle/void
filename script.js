@@ -1793,6 +1793,27 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
   });
 });
 
+// ---------- TOP FEED THE VOID BUTTON (GIVES +1 DUST) ----------
+
+// This is the button ABOVE the resources
+el.feedVoidBtn = document.getElementById("feed-void-btn");
+
+// Function for the TOP button only
+function feedVoidDustButton() {
+  state.dust += 1;
+
+  // Floating text
+  const rect = el.feedVoidBtn.getBoundingClientRect();
+  floatText("+1 Dust", rect, "#facc15");
+
+  render();
+}
+
+// Attach event listener AFTER DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  el.feedVoidBtn.addEventListener("click", feedVoidDustButton);
+});
+
 /* ---------- BUTTONS ---------- */
 
 el.feedVoidBtn.addEventListener("click", feedVoid);
