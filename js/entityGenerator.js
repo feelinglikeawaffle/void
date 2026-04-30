@@ -2,86 +2,82 @@
    ENTITY GENERATOR
    ============================ */
 
-const ENTITY_STAR_WEIGHTS = [
-  { stars: 1, weight: 70 },
-  { stars: 2, weight: 20 },
-  { stars: 3, weight: 7 },
-  { stars: 4, weight: 2.5 },
-  { stars: 5, weight: 0.5 }
+/* ----------------------------
+   Name Pools
+   ---------------------------- */
+
+const namePrefixes = [
+  "Void", "Echo", "Dust", "Iron", "Shadow",
+  "Astral", "Prime", "Omega", "Nova", "Quantum"
 ];
 
-const ENTITY_DPS_RANGES = {
-  1: { min: 1, max: 3 },
-  2: { min: 5, max: 15 },
-  3: { min: 20, max: 60 },
-  4: { min: 150, max: 300 },
-  5: { min: 800, max: 1200 }
-};
+const nameCores = [
+  "Worker", "Harvester", "Miner", "Collector",
+  "Extractor", "Drone", "Servitor", "Golem",
+  "Automaton", "Construct"
+];
 
-const ENTITY_BASE_HIRE_COST = {
-  1: 10,
-  2: 100,
-  3: 1000,
-  4: 10000,
-  5: 100000
-};
-
-function randRange(min, max) {
-  return min + Math.random() * (max - min);
-}
-
-function pickWeightedStar() {
-  const total = ENTITY_STAR_WEIGHTS.reduce((s, e) => s + e.weight, 0);
-  let r = Math.random() * total;
-  for (const e of ENTITY_STAR_WEIGHTS) {
-    if (r < e.weight) return e.stars;
-    r -= e.weight;
-  }
-  return 1;
-}
-
-function rollEntityStats(stars) {
-  const range = ENTITY_DPS_RANGES[stars];
-  const dps = randRange(range.min, range.max);
-
-  // Extra stats (simple for now, can expand later)
-  return {
-    dps,
-    speed: 1 + Math.random() * 0.5,     // affects future mechanics
-    luck: Math.random(),                // affects merge / rarity later
-    efficiency: 1 + Math.random() * 0.5 // future hooks
-  };
-}
-
-function calcHireCost(stars) {
-  const base = ENTITY_BASE_HIRE_COST[stars] || 10;
-  const mult = state.entityHireCostMult || 1;
-  return Math.floor(base * mult);
-}
+/* ----------------------------
+   Generate a Random Entity
+   ---------------------------- */
 
 function generateEntity() {
-  const stars = pickWeightedStar();
-  const id = crypto.randomUUID ? crypto.randomUUID() : ("e_" + Math.random().toString(36).slice(2));
-  const num = Math.floor(100 + Math.random() * 900);
-  const name = `Entity #${num}`;
-  const stats = rollEntityStats(stars);
+  const stars = rollStars();
+  const base = rollBaseStats(stars);
 
   return {
-    id,
-    name,
-    stars,
-    dps: stats.dps,
-    speed: stats.speed,
-    luck: stats.luck,
-    efficiency: stats.efficiency,
-    isUltra: false
+    name: generateName(),
+    stars: stars,
+    dps: base.dps,
+    speed: base.speed,
+    efficiency: base.efficiency,
+    progress: 0
   };
 }
 
-function generateHirePool(count = 6) {
-  const pool = [];
-  for (let i = 0; i < count; i++) {
-    pool.push(generateEntity());
-  }
-  return pool;
+/* ----------------------------
+   Star Rating (1–5)
+   ---------------------------- */
+
+function rollStars() {
+  const r = Math.random();
+
+  if (r < 0.60) return 1;   // 60%
+  if (r < 0.85) return 2;   // 25%
+  if (r < 0.95) return 3;   // 10%
+  if (r < 0.99) return 4;   // 4%
+  return 5;                 // 1%
+}
+
+/* ----------------------------
+   Base Stats by Star Rating
+   ---------------------------- */
+
+function rollBaseStats(stars) {
+  // Stars scale stats multiplicatively
+  const mult = 1 + stars * 0.25;
+
+  return {
+    dps: randRange(1, 3) * mult,
+    speed: randRange(0.5, 1.5) * mult,
+    efficiency: randRange(0.8, 1.2) * mult
+  };
+}
+
+/* ----------------------------
+   Random Name Generator
+   ---------------------------- */
+
+function generateName() {
+  const pre = namePrefixes[Math.floor(Math.random() * namePrefixes.length)];
+  const core = nameCores[Math.floor(Math.random() * nameCores.length)];
+  return `${pre} ${core}`;
+}
+
+/* ----------------------------
+   Utility — Random Range
+   ---------------------------- */
+
+function randRange(min, max) {
+  return Math.random() * (max - min) + min;
 }
