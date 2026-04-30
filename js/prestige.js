@@ -1,160 +1,190 @@
 /* ============================
-   PRESTIGE — Ascend, Transcend, Eternal
+   PRESTIGE — Ascend / Transcend / Eternal
    ============================ */
 
 
 /* ----------------------------
-   Ascension Requirements
+   Requirements
    ---------------------------- */
 
-function getAscendRequirement() {
-  return 1000; // Example: require 1000 Void Favor
-}
-
-function canAscend() {
-  return state.voidFavor >= getAscendRequirement();
-}
+const ASCEND_REQ = 1000;          // Void Favor needed
+const TRANSCEND_REQ = 10000;      // Void Favor needed
+const ETERNAL_REQ = 100000;       // Void Favor needed
 
 
 /* ----------------------------
-   Ascend Action
+   Ascend
    ---------------------------- */
+
+function canAscend() {
+  return state.voidFavor >= ASCEND_REQ;
+}
 
 function doAscend() {
   if (!canAscend()) return;
 
-  // Gain Ascendant Shards
-  const gain = Math.floor(state.voidFavor / 1000);
-  state.ascendantShards += gain;
+  const gained = Math.floor(state.voidFavor / ASCEND_REQ);
+  state.ascendantShards += gained;
 
-  // Reset basic layers
+  // Reset basic progression
+  resetJobs();
+  resetSkills();
+  resetResources();
+
+  // Keep prestige resources
+  state.voidFavor = 0;
+
+  // Recalculate multipliers
+  recalcAllMultipliers();
+
+  render();
+}
+
+
+/* ----------------------------
+   Transcend
+   ---------------------------- */
+
+function canTranscend() {
+  return state.voidFavor >= TRANSCEND_REQ;
+}
+
+function doTranscend() {
+  if (!canTranscend()) return;
+
+  const gained = Math.floor(state.voidFavor / TRANSCEND_REQ);
+  state.transcendentEssence += gained;
+
+  // Harder reset
+  resetJobs();
+  resetSkills();
+  resetResources();
+  state.ascendantShards = 0;
+
+  state.voidFavor = 0;
+
+  recalcAllMultipliers();
+
+  render();
+}
+
+
+/* ----------------------------
+   Eternal
+   ---------------------------- */
+
+function canEternal() {
+  return state.voidFavor >= ETERNAL_REQ;
+}
+
+function doEternal() {
+  if (!canEternal()) return;
+
+  const gained = Math.floor(state.voidFavor / ETERNAL_REQ);
+  state.eternalEmbers += gained;
+
+  // Full wipe except Eternal Embers
+  resetJobs();
+  resetSkills();
+  resetResources();
+  state.ascendantShards = 0;
+  state.transcendentEssence = 0;
+
+  state.voidFavor = 0;
+
+  recalcAllMultipliers();
+
+  render();
+}
+
+
+/* ----------------------------
+   Reset Helpers
+   ---------------------------- */
+
+function resetJobs() {
+  for (const id in state.jobs) {
+    state.jobs[id].progress = 0;
+  }
+}
+
+function resetSkills() {
+  for (const id in state.skills) {
+    state.skills[id].level = 0;
+    state.skills[id].progress = 0;
+  }
+}
+
+function resetResources() {
   state.dust = 0;
   state.fragments = 0;
   state.echoes = 0;
   state.cores = 0;
   state.sigils = 0;
-
-  // Reset skills & jobs
-  skillDefs.forEach(def => {
-    state.skills[def.id].level = 0;
-    state.skills[def.id].progress = 0;
-  });
-
-  jobDefs.forEach(def => {
-    state.jobs[def.id].level = 0;
-    state.jobs[def.id].progress = 0;
-  });
-
-  // Reset Void Favor
+  state.paradoxDust = 0;
+  state.riftEnergy = 0;
+  state.realityShards = 0;
+  state.voidCrystals = 0;
+  state.astralFibers = 0;
+  state.entropicMass = 0;
   state.voidFavor = 0;
-
-  render();
 }
 
 
 /* ----------------------------
-   Transcend Requirements
+   Recalculate All Multipliers
    ---------------------------- */
 
-function getTranscendRequirement() {
-  return 10; // Example: require 10 Ascendant Shards
-}
+function recalcAllMultipliers() {
+  state.globalSpeedMult = 1;
+  state.jobSpeedMult = 1;
+  state.jobYieldMult = 1;
+  state.refinerySpeedMult = 1;
+  state.refineryEfficiencyMult = 1;
+  state.voidGainMult = 1;
 
-function canTranscend() {
-  return state.ascendantShards >= getTranscendRequirement();
-}
+  // Reapply skill effects
+  skillDefs.forEach(def => {
+    def.applyLevelEffect();
+  });
 
-
-/* ----------------------------
-   Transcend Action
-   ---------------------------- */
-
-function doTranscend() {
-  if (!canTranscend()) return;
-
-  // Gain Transcendent Essence
-  const gain = Math.floor(state.ascendantShards / 10);
-  state.transcendentEssence += gain;
-
-  // Reset Ascension layer
-  state.ascendantShards = 0;
-
-  // Reset everything below
-  doAscend(); // performs full reset
-
-  render();
+  // Reapply shop upgrades
+  for (const cat in state.shop) {
+    for (const id in state.shop[cat]) {
+      if (state.shop[cat][id]) {
+        const def = shopDefs[cat].find(x => x.id === id);
+        if (def) def.apply();
+      }
+    }
+  }
 }
 
 
 /* ----------------------------
-   Eternal Requirements
-   ---------------------------- */
-
-function getEternalRequirement() {
-  return 100; // Example: require 100 Transcendent Essence
-}
-
-function canEnterEternal() {
-  return state.transcendentEssence >= getEternalRequirement();
-}
-
-
-/* ----------------------------
-   Eternal Action
-   ---------------------------- */
-
-function doEternal() {
-  if (!canEnterEternal()) return;
-
-  // Gain Eternal Embers
-  const gain = Math.floor(state.transcendentEssence / 100);
-  state.eternalEmbers += gain;
-
-  // Reset transcendence layer
-  state.transcendentEssence = 0;
-
-  // Reset everything below
-  doTranscend();
-
-  render();
-}
-
-
-/* ----------------------------
-   Build Prestige UI
-   ---------------------------- */
-
-function buildPrestigeUI() {
-  // Ascend
-  el.ascendInfo.textContent =
-    "Requires " + getAscendRequirement() + " Void Favor.";
-  el.ascendBtn.disabled = !canAscend();
-  el.ascendBtn.onclick = doAscend;
-
-  // Transcend
-  el.transcendInfo.textContent =
-    "Requires " + getTranscendRequirement() + " Ascendant Shards.";
-  el.transcendBtn.disabled = !canTranscend();
-  el.transcendBtn.onclick = doTranscend;
-
-  // Eternal
-  el.eternalInfo.textContent =
-    "Requires " + getEternalRequirement() + " Transcendent Essence.";
-  el.eternalBtn.disabled = !canEnterEternal();
-  el.eternalBtn.onclick = doEternal;
-}
-
-
-/* ----------------------------
-   Render Prestige Panels
+   Render Prestige UI
    ---------------------------- */
 
 function renderPrestige() {
-  // Update resource displays
-  el.shards.textContent = format(state.ascendantShards);
-  el.essence.textContent = format(state.transcendentEssence);
-  el.embers.textContent = format(state.eternalEmbers);
+  // Ascend
+  el.ascendInfo.textContent = `Requires ${ASCEND_REQ} Void Favor`;
+  el.ascendBtn.disabled = !canAscend();
 
-  // Update buttons
-  buildPrestigeUI();
+  // Transcend
+  el.transcendInfo.textContent = `Requires ${TRANSCEND_REQ} Void Favor`;
+  el.transcendBtn.disabled = !canTranscend();
+
+  // Eternal
+  el.eternalInfo.textContent = `Requires ${ETERNAL_REQ} Void Favor`;
+  el.eternalBtn.disabled = !canEternal();
+}
+
+
+/* ----------------------------
+   Hook Buttons
+   ---------------------------- */
+
+function setupPrestigeButtons() {
+  el.ascendBtn.addEventListener("click", doAscend);
+  el.transcendBtn.addEventListener("click", doTranscend);
+  el.eternalBtn.addEventListener("click", doEternal);
 }
