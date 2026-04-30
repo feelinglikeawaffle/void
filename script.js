@@ -1065,27 +1065,48 @@ function buildUI() {
   });
 
   // void actions (simple: 10 dust -> 1 favor)
-  const vRow = document.createElement("div");
-  vRow.className = "row";
-  const vLeft = document.createElement("div");
-  vLeft.style.flex = "1";
-  const vHeader = document.createElement("div");
-  vHeader.className = "row-header";
-  const vName = document.createElement("div");
-  vName.className = "row-name";
-  vName.textContent = "Dust Offering";
-  const vMeta = document.createElement("div");
-  vMeta.className = "row-meta";
-  vMeta.textContent = "10 Dust → 1 Void Favor (improved by Void skills & shop).";
-  vHeader.appendChild(vName);
-  vHeader.appendChild(vMeta);
-  const vDesc = document.createElement("div");
-  vDesc.className = "row-desc";
-  vDesc.textContent = "Convert Dust into Void Favor. Affected by Void Sensitivity, Void Channeling, and Void shop upgrades.";
-  vLeft.appendChild(vHeader);
-  vLeft.appendChild(vDesc);
-  vRow.appendChild(vLeft);
-  el.voidActions.appendChild(vRow);
+  // void actions (simple: 10 dust -> 1 favor)
+const vRow = document.createElement("div");
+vRow.className = "row";
+
+const vLeft = document.createElement("div");
+vLeft.style.flex = "1";
+
+const vHeader = document.createElement("div");
+vHeader.className = "row-header";
+
+const vName = document.createElement("div");
+vName.className = "row-name";
+vName.textContent = "Feed the Void (Dust)";
+
+const vMeta = document.createElement("div");
+vMeta.className = "row-meta";
+vMeta.textContent = "10 Dust → 1 Void Favor";
+
+vHeader.appendChild(vName);
+vHeader.appendChild(vMeta);
+
+const vDesc = document.createElement("div");
+vDesc.className = "row-desc";
+vDesc.textContent = "Offer Dust to the Void. Affected by Void skills & shop upgrades.";
+
+vLeft.appendChild(vHeader);
+vLeft.appendChild(vDesc);
+
+const vRight = document.createElement("div");
+vRight.className = "row-right";
+
+const vBtn = document.createElement("button");
+vBtn.textContent = "Feed";
+vBtn.addEventListener("click", feedVoid);
+
+vRight.appendChild(vBtn);
+
+vRow.appendChild(vLeft);
+vRow.appendChild(vRight);
+
+el.voidActions.appendChild(vRow);
+
 
   // ascension upgrades (finite)
   ascUpgradeDefs.forEach(def => {
