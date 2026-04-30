@@ -33,21 +33,21 @@ const state = {
   refineryEfficiencyMult: 1,
 
   /* ============================
-     ENTITIES (NEW JOB SYSTEM)
+     ENTITIES (Jobs System)
      ============================ */
   entities: {
     list: [],            // hired entities
-    hirePool: [],        // 6 random entities to choose from
-    nextRefreshAt: 0,    // timestamp for next refresh
-    hireCostMult: 1      // increases by 5% per hire
+    hirePool: [],        // candidates in hire modal
+    nextRefreshAt: 0,    // timestamp (performance.now) for next pool refresh
+    hireCostMult: 1      // increases slightly per hire
   },
 
   /* ============================
-     SKILLS (AUTO-TRAINING)
+     SKILLS (Auto-training)
      ============================ */
   skills: {
-    // Only starting skill is created here.
-    // Others unlock dynamically.
+    // Only the starting skill is defined here.
+    // Others are unlocked dynamically via skillDefs + checkSkillUnlocks.
     focus: { level: 0, xp: 0 }
   },
 
