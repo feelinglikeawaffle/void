@@ -96,7 +96,20 @@
 
 
   <!-- ============================
-       SCRIPTS
+       ERUDA DEBUG CONSOLE
+       ============================ -->
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>
+    // Initialize Eruda after page loads
+    document.addEventListener("DOMContentLoaded", () => {
+      eruda.init();
+      console.log("Eruda console loaded.");
+    });
+  </script>
+
+
+  <!-- ============================
+       GAME SCRIPTS
        ============================ -->
   <script src="elements.js"></script>
   <script src="state.js"></script>
