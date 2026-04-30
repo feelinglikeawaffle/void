@@ -8,9 +8,16 @@
 
 <body>
 
-  <!-- ============================
-       TOP NAV / TABS
-       ============================ -->
+  <!-- RESOURCE BAR -->
+  <div id="resource-bar">
+    <span id="res-dust">Dust: 0</span>
+    <span id="res-void">Void: 0</span>
+    <span id="res-ascend">Ascendant Shards: 0</span>
+    <span id="res-transcend">Transcendent Essence: 0</span>
+    <span id="res-eternal">Eternal Embers: 0</span>
+  </div>
+
+  <!-- TOP NAV / TABS -->
   <div id="top-bar">
     <button class="tab-btn active" data-tab="skills">Skills</button>
     <button class="tab-btn" data-tab="jobs">Entities</button>
@@ -19,10 +26,7 @@
     <button class="tab-btn" data-tab="prestige">Prestige</button>
   </div>
 
-
-  <!-- ============================
-       TABS
-       ============================ -->
+  <!-- TABS -->
 
   <div id="tab-skills" class="tab active">
     <h2>Skills</h2>
@@ -77,16 +81,10 @@
     </div>
   </div>
 
-
-  <!-- ============================
-       LOG PANEL
-       ============================ -->
+  <!-- LOG PANEL -->
   <div id="log"></div>
 
-
-  <!-- ============================
-       ERUDA DEBUG CONSOLE
-       ============================ -->
+  <!-- ERUDA -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -95,18 +93,14 @@
     });
   </script>
 
-  <!-- ============================
-       GLOBAL ERROR TRAP
-       ============================ -->
+  <!-- GLOBAL ERROR TRAP -->
   <script>
     window.onerror = function (msg, src, line, col, err) {
       console.error("GLOBAL ERROR:", msg, "at", src + ":" + line + ":" + col);
     };
   </script>
 
-  <!-- ============================
-       GAME SCRIPTS
-       ============================ -->
+  <!-- GAME SCRIPTS -->
   <script src="js/elements.js"></script>
   <script src="js/state.js"></script>
   <script src="js/skillDefs.js"></script>
@@ -121,9 +115,7 @@
   <script src="js/tick.js"></script>
   <script src="js/main.js"></script>
 
-  <!-- ============================
-       SCRIPT LOAD DETECTOR
-       ============================ -->
+  <!-- SCRIPT LOAD DETECTOR -->
   <script>
     const expectedScripts = [
       "js/elements.js","js/state.js","js/skillDefs.js","js/entityGenerator.js",
