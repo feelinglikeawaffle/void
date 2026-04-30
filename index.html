@@ -8,9 +8,6 @@
 
 <body>
 
-  <!-- ============================
-       TOP NAV / TABS
-       ============================ -->
   <div id="top-bar">
     <button class="tab-btn active" data-tab="skills">Skills</button>
     <button class="tab-btn" data-tab="jobs">Entities</button>
@@ -19,30 +16,21 @@
     <button class="tab-btn" data-tab="prestige">Prestige</button>
   </div>
 
-
-  <!-- ============================
-       TABS
-       ============================ -->
-
-  <!-- Skills -->
   <div id="tab-skills" class="tab active">
     <h2>Skills</h2>
     <div id="skills-container"></div>
   </div>
 
-  <!-- Jobs / Entities -->
   <div id="tab-jobs" class="tab">
     <h2>Entities</h2>
     <div id="jobs-container"></div>
   </div>
 
-  <!-- Void -->
   <div id="tab-void" class="tab">
     <h2>Void</h2>
     <div id="void-actions"></div>
   </div>
 
-  <!-- Shop -->
   <div id="tab-shop" class="tab">
     <h2>Shop</h2>
 
@@ -62,7 +50,6 @@
     <div id="shop-eternal"></div>
   </div>
 
-  <!-- Prestige -->
   <div id="tab-prestige" class="tab">
     <h2>Prestige</h2>
 
@@ -82,22 +69,9 @@
     </div>
   </div>
 
-
-  <!-- ============================
-       LOG PANEL
-       ============================ -->
   <div id="log"></div>
 
-
-  <!-- ============================
-       HIRE MODAL (Created by JS)
-       ============================ -->
-  <!-- JS will inject #hire-modal here -->
-
-
-  <!-- ============================
-       ERUDA DEBUG CONSOLE
-       ============================ -->
+  <!-- ERUDA -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -106,18 +80,14 @@
     });
   </script>
 
-  <!-- ============================
-       GLOBAL ERROR TRAP
-       ============================ -->
+  <!-- GLOBAL ERROR TRAP -->
   <script>
     window.onerror = function (msg, src, line, col, err) {
       console.error("GLOBAL ERROR:", msg, "at", src + ":" + line + ":" + col);
     };
   </script>
 
-  <!-- ============================
-       GAME SCRIPTS
-       ============================ -->
+  <!-- GAME SCRIPTS -->
   <script src="elements.js"></script>
   <script src="state.js"></script>
   <script src="skillDefs.js"></script>
@@ -132,19 +102,26 @@
   <script src="tick.js"></script>
   <script src="main.js"></script>
 
-  <!-- ============================
-       SCRIPT LOAD VERIFICATION
-       ============================ -->
+  <!-- AUTO SCRIPT LOADER DETECTOR -->
   <script>
-    console.log("INDEX: Reached end of HTML.");
+    const expectedScripts = [
+      "elements.js","state.js","skillDefs.js","entityGenerator.js",
+      "skills.js","jobs.js","void.js","shopDefs.js","shop.js",
+      "prestige.js","ui.js","tick.js","main.js"
+    ];
 
-    console.log("INDEX: typeof buildUI =", typeof buildUI);
-    console.log("INDEX: typeof startGame =", typeof startGame);
-    console.log("INDEX: typeof initGame =", typeof initGame);
+    expectedScripts.forEach(name => {
+      const tag = document.querySelector(`script[src="${name}"]`);
+      if (!tag) {
+        console.error("SCRIPT TAG MISSING:", name);
+      } else {
+        tag.addEventListener("error", () => {
+          console.error("FAILED TO LOAD SCRIPT:", name);
+        });
+      }
+    });
 
-    console.log("INDEX: typeof state =", typeof state);
-    console.log("INDEX: typeof skillDefs =", typeof skillDefs);
-    console.log("INDEX: typeof generateEntity =", typeof generateEntity);
+    console.log("INDEX: Script loader detector active.");
   </script>
 
 </body>
