@@ -1805,12 +1805,13 @@ el.feedVoidBtn = document.getElementById("feed-void-btn");
 function feedVoidDustButton() {
   state.dust += 1;
 
-  // Floating text
-  const rect = el.feedVoidBtn.getBoundingClientRect();
+  const rect = el.feedDustBtn.getBoundingClientRect();
   floatText("+1 Dust", rect, "#facc15");
 
   render();
 }
+
+el.feedDustBtn.addEventListener("click", feedVoidDustButton);
 
 // Attach event listener AFTER DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
