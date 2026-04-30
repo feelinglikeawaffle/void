@@ -2,90 +2,35 @@
    GLOBAL
    ============================ */
 
-:root {
-  --bg: #0a0a0f;
-  --panel: #14141c;
-  --panel-light: #1c1c26;
-  --accent: #8b5cf6;
-  --accent-light: #a78bfa;
-  --text: #e5e5f0;
-  --muted: #8a8a9c;
-  --danger: #ff4d4d;
-  --success: #4ade80;
-}
-
-* {
-  box-sizing: border-box;
-  font-family: "Inter", sans-serif;
-}
-
 body {
+  background: #0a0a0f;
+  color: #e0e0ff;
+  font-family: Arial, sans-serif;
   margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  overflow-x: hidden;
+  padding: 0;
 }
 
-#app {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
+h2, h3 {
+  margin-top: 0;
+  color: #b0b0ff;
 }
 
-
-/* ============================
-   HEADER
-   ============================ */
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+button {
+  background: #222244;
+  color: #e0e0ff;
+  border: 1px solid #444466;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 2rem;
-  letter-spacing: 1px;
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
-.sub {
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-
-/* ============================
-   VOID PANEL
-   ============================ */
-
-#void-panel {
-  background: var(--panel);
-  padding: 12px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-#void-panel-left {
-  font-size: 0.9rem;
-}
-
-#void-name {
-  font-size: 1.1rem;
-  margin-bottom: 6px;
-  color: var(--accent-light);
-}
-
-#void-panel-right {
-  text-align: right;
-}
-
-#resource-line {
-  font-size: 0.8rem;
-  line-height: 1.4;
+button:hover:not(:disabled) {
+  background: #333366;
 }
 
 
@@ -93,32 +38,25 @@ header h1 {
    TABS
    ============================ */
 
-#tabs {
+#top-bar {
   display: flex;
-  gap: 6px;
-  margin-bottom: 12px;
+  gap: 8px;
+  padding: 10px;
+  background: #111122;
+  border-bottom: 2px solid #222233;
 }
 
 .tab-btn {
-  background: var(--panel-light);
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  color: var(--text);
+  padding: 8px 14px;
 }
 
 .tab-btn.active {
-  background: var(--accent);
-}
-
-.tab-btn.locked {
-  opacity: 0.4;
-  cursor: default;
+  background: #444488;
 }
 
 .tab {
   display: none;
+  padding: 20px;
 }
 
 .tab.active {
@@ -127,64 +65,114 @@ header h1 {
 
 
 /* ============================
-   SKILLS & JOBS
+   SKILLS
    ============================ */
 
-.skill-row,
-.job-row {
-  background: var(--panel);
+.skill-row {
+  margin-bottom: 12px;
   padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 8px;
+  background: #111122;
+  border: 1px solid #222233;
+  border-radius: 4px;
 }
 
-.skill-name,
-.job-name {
-  font-size: 1rem;
+.skill-name {
+  font-weight: bold;
   margin-bottom: 4px;
 }
 
-.skill-level,
-.job-level {
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-
-.skill-bar,
-.job-bar {
+.skill-bar {
   width: 100%;
-  height: 8px;
-  background: var(--panel-light);
+  height: 10px;
+  background: #222233;
   border-radius: 4px;
   overflow: hidden;
 }
 
-.skill-fill,
-.job-fill {
+.skill-fill {
   height: 100%;
+  background: #6666ff;
   width: 0%;
-  background: var(--accent);
-  transition: width 0.1s linear;
-}
-
-.muted {
-  color: var(--muted);
-  font-size: 0.85rem;
 }
 
 
 /* ============================
-   VOID TAB
+   ENTITIES
    ============================ */
 
-.void-row {
-  background: var(--panel);
+.entity-row {
   padding: 10px;
-  border-radius: 6px;
+  margin-bottom: 10px;
+  background: #111122;
+  border: 1px solid #222233;
+  border-radius: 4px;
+}
+
+.entity-name {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.entity-bar {
+  width: 100%;
+  height: 10px;
+  background: #222233;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.entity-fill {
+  height: 100%;
+  background: #55ffaa;
+  width: 0%;
+}
+
+
+/* ============================
+   HIRE MODAL
+   ============================ */
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #111122;
+  padding: 20px;
+  border: 1px solid #333344;
+  border-radius: 6px;
+  width: 400px;
+}
+
+.hire-row {
+  padding: 10px;
+  background: #1a1a2a;
+  border: 1px solid #333344;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.hire-name {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.hire-stats {
+  font-size: 13px;
+  opacity: 0.8;
 }
 
 
@@ -193,124 +181,34 @@ header h1 {
    ============================ */
 
 .shop-row {
-  background: var(--panel);
   padding: 10px;
-  border-radius: 6px;
+  background: #111122;
+  border: 1px solid #222233;
+  border-radius: 4px;
   margin-bottom: 10px;
 }
 
 .shop-name {
-  font-size: 1rem;
-  margin-bottom: 4px;
+  font-weight: bold;
 }
 
 .shop-desc {
-  font-size: 0.85rem;
-  color: var(--muted);
+  font-size: 13px;
+  opacity: 0.8;
   margin-bottom: 6px;
 }
 
-.shop-cost {
-  font-size: 0.8rem;
-  margin-bottom: 6px;
-}
-
-.shop-row button {
-  background: var(--accent);
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-}
-
-.shop-row button:disabled {
-  background: #444;
-  cursor: default;
-}
-
 
 /* ============================
-   PRESTIGE PANELS
+   PRESTIGE
    ============================ */
 
-#tab-ascend,
-#tab-transcend,
-#tab-eternal {
-  font-size: 0.9rem;
-}
-
-#tab-prestige h3 {
-  margin-top: 20px;
-  color: var(--accent-light);
-}
-
-#ascend-btn,
-#transcend-btn,
-#eternal-btn {
-  background: var(--accent);
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-#ascend-btn:disabled,
-#transcend-btn:disabled,
-#eternal-btn:disabled {
-  background: #444;
-  cursor: default;
-}
-
-
-/* ============================
-   FLOATING TEXT
-   ============================ */
-
-.float-text {
-  position: fixed;
-  pointer-events: none;
-  font-size: 0.9rem;
-  font-weight: bold;
-  transform: translateY(0);
-  opacity: 1;
-  transition: transform 0.8s ease-out, opacity 0.8s ease-out;
-  z-index: 9999;
-}
-
-
-/* ============================
-   FOOTER
-   ============================ */
-
-#footer {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px;
-}
-
-#footer button {
-  background: var(--panel-light);
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  color: var(--text);
-  cursor: pointer;
-}
-
-#footer button:hover {
-  background: var(--accent);
-}
-
-button.danger {
-  background: var(--danger);
-  color: white;
-}
-
-button.danger:hover {
-  background: #ff6666;
+.prestige-block {
+  padding: 12px;
+  background: #111122;
+  border: 1px solid #222233;
+  border-radius: 4px;
+  margin-bottom: 12px;
 }
 
 
@@ -319,45 +217,10 @@ button.danger:hover {
    ============================ */
 
 #log {
-  background: var(--panel);
-  border-radius: 6px;
-  padding: 10px;
   height: 150px;
   overflow-y: auto;
-  font-size: 0.8rem;
-  border: 1px solid var(--panel-light);
-}
-
-
-/* ============================
-   MODAL (Hire Entities)
-   ============================ */
-
-.modal.hidden {
-  display: none;
-}
-
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-}
-
-.modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-}
-
-.modal-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--panel);
-  padding: 16px;
-  border-radius: 8px;
-  width: 420px;
-  max-height: 70vh;
-  overflow-y: auto;
+  background: #08080c;
+  border-top: 2px solid #222233;
+  padding: 10px;
+  font-size: 13px;
 }
