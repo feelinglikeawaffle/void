@@ -13,10 +13,12 @@ const el = {
   // Jobs
   jobs: document.getElementById("jobs-container"),
 
-  // Void Panel
-  voidPanel: document.getElementById("void-actions"),
+  // Void
+  voidActions: document.getElementById("void-actions"),
   voidFavor: document.getElementById("void-favor-value"),
   voidMult: document.getElementById("void-mult-value"),
+
+  // Prestige Resources
   shards: document.getElementById("shard-count"),
   essence: document.getElementById("essence-count"),
   embers: document.getElementById("ember-count"),
