@@ -10,18 +10,18 @@
 const shopDefs = {
   resource: [
     {
-      id: "dust_gain_1",
-      name: "Dust Efficiency I",
-      desc: "+25% Dust gain",
-      cost: 50,
-      apply: () => state.dustGainMult = (state.dustGainMult || 1) * 1.25
+      id: "job_speed_1",
+      name: "Faster Workers I",
+      desc: "+20% Job Speed",
+      cost: 100,
+      apply: () => state.jobSpeedMult *= 1.20
     },
     {
-      id: "fragment_gain_1",
-      name: "Fragment Efficiency I",
-      desc: "+25% Fragment gain",
-      cost: 100,
-      apply: () => state.fragmentGainMult = (state.fragmentGainMult || 1) * 1.25
+      id: "job_yield_1",
+      name: "Stronger Tools I",
+      desc: "+20% Job Yield",
+      cost: 150,
+      apply: () => state.jobYieldMult *= 1.20
     }
   ],
 
@@ -29,39 +29,53 @@ const shopDefs = {
     {
       id: "void_gain_1",
       name: "Void Conduit I",
-      desc: "+20% Void Favor gain",
+      desc: "+25% Void Favor Gain",
       cost: 200,
-      apply: () => state.voidGainMult = (state.voidGainMult || 1) * 1.20
+      apply: () => state.voidGainMult *= 1.25
     }
   ],
 
   ascend: [
     {
-      id: "ascend_speed_1",
+      id: "global_speed_1",
       name: "Ascendant Flow I",
-      desc: "+10% global speed",
+      desc: "+10% Global Speed",
       cost: 5,
-      apply: () => state.ascendSpeedMult = (state.ascendSpeedMult || 1) * 1.10
+      apply: () => state.globalSpeedMult *= 1.10
     }
   ],
 
   transcend: [
     {
-      id: "transcend_gain_1",
-      name: "Essence Surge I",
-      desc: "+10% all gains",
+      id: "refinery_speed_1",
+      name: "Essence Refinement I",
+      desc: "+20% Refinery Speed",
       cost: 10,
-      apply: () => state.transcendGainMult = (state.transcendGainMult || 1) * 1.10
+      apply: () => state.refinerySpeedMult *= 1.20
+    },
+    {
+      id: "refinery_eff_1",
+      name: "Essence Efficiency I",
+      desc: "+10% Refinery Efficiency",
+      cost: 15,
+      apply: () => state.refineryEfficiencyMult *= 1.10
     }
   ],
 
   eternal: [
     {
-      id: "eternal_power_1",
+      id: "all_gain_1",
       name: "Eternal Flame I",
-      desc: "+5% everything",
+      desc: "+5% Everything",
       cost: 1,
-      apply: () => state.eternalMult = (state.eternalMult || 1) * 1.05
+      apply: () => {
+        state.globalSpeedMult *= 1.05;
+        state.jobSpeedMult *= 1.05;
+        state.jobYieldMult *= 1.05;
+        state.refinerySpeedMult *= 1.05;
+        state.refineryEfficiencyMult *= 1.05;
+        state.voidGainMult *= 1.05;
+      }
     }
   ]
 };
@@ -117,7 +131,7 @@ function buildShopCategory(container, category, defs) {
     const cost = document.createElement("div");
     cost.className = "shop-cost";
 
-    // Currency label fix
+    // Currency label
     let currencyName = "";
     if (category === "resource") currencyName = "Dust";
     if (category === "void") currencyName = "Void Favor";
