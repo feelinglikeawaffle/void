@@ -1660,10 +1660,13 @@ function tick() {
     }
   });
 
-  // AUTO-FEED VOID
-  if (el.autoVoid.checked && state.dust >= 10) {
-    feedVoid();
-  }
+ // AUTO-FEED VOID (only when checkbox is truly checked)
+if (el.autoVoid && el.autoVoid.checked === true) {
+    if (state.dust >= 10) {
+        feedVoid();
+    }
+}
+
 
   updateUnlocks();
   updatePrestigeInfo();
