@@ -73,9 +73,8 @@ const shopDefs = {
 
 function buyUpgrade(category, def) {
   const owned = state.shop[category][def.id];
-  if (owned) return; // already bought
+  if (owned) return;
 
-  // Determine currency
   let currency = null;
   if (category === "resource") currency = "dust";
   if (category === "void") currency = "voidFavor";
@@ -85,13 +84,9 @@ function buyUpgrade(category, def) {
 
   if (state[currency] < def.cost) return;
 
-  // Pay cost
   state[currency] -= def.cost;
-
-  // Mark as owned
   state.shop[category][def.id] = true;
 
-  // Apply effect
   def.apply();
 
   render();
@@ -121,7 +116,16 @@ function buildShopCategory(container, category, defs) {
 
     const cost = document.createElement("div");
     cost.className = "shop-cost";
-    cost.textContent = "Cost: " + def.cost;
+
+    // Currency label fix
+    let currencyName = "";
+    if (category === "resource") currencyName = "Dust";
+    if (category === "void") currencyName = "Void Favor";
+    if (category === "ascend") currencyName = "Ascendant Shards";
+    if (category === "transcend") currencyName = "Transcendent Essence";
+    if (category === "eternal") currencyName = "Eternal Embers";
+
+    cost.textContent = `Cost: ${def.cost} ${currencyName}`;
 
     const btn = document.createElement("button");
     btn.textContent = owned ? "Bought" : "Buy";
@@ -152,7 +156,7 @@ function buildShopUI() {
 
 
 /* ----------------------------
-   Render Shop (updates button states)
+   Render Shop
    ---------------------------- */
 
 function renderShop() {
