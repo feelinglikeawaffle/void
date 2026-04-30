@@ -1,5 +1,5 @@
 /* ============================
-   JOBS — Logic & UI
+   JOBS / ENTITIES — Constant Dust Generators
    ============================ */
 
 
@@ -11,8 +11,6 @@ function buildJobsUI() {
   el.jobs.innerHTML = "";
 
   jobDefs.forEach(def => {
-    if (!jobUnlocked(def)) return;
-
     const j = state.jobs[def.id];
 
     const row = document.createElement("div");
@@ -21,10 +19,6 @@ function buildJobsUI() {
     const name = document.createElement("div");
     name.className = "job-name";
     name.textContent = def.name;
-
-    const level = document.createElement("div");
-    level.className = "job-level";
-    level.textContent = "Lv " + j.level;
 
     const bar = document.createElement("div");
     bar.className = "job-bar";
@@ -36,11 +30,10 @@ function buildJobsUI() {
     bar.appendChild(fill);
 
     row.appendChild(name);
-    row.appendChild(level);
     row.appendChild(bar);
 
-    // Store UI references
-    j._ui = { level, fill };
+    // Store UI refs
+    j._ui = { fill };
 
     el.jobs.appendChild(row);
   });
@@ -52,26 +45,29 @@ function buildJobsUI() {
    ---------------------------- */
 
 function tickJobs(dt) {
-  const globalSpeed = getGlobalSpeedMult();
-  const jobYield = getJobYieldMult();
-  const allGain = getAllGainMult();
+  const globalSpeed = state.globalSpeedMult;
+  const jobSpeed = state.jobSpeedMult;
+  const jobYield = state.jobYieldMult;
 
   jobDefs.forEach(def => {
-    if (!jobUnlocked(def)) return;
-
     const j = state.jobs[def.id];
 
-    const duration = def.baseDuration * Math.pow(1 + def.durationGrowth, j.level);
-    const effective = duration / globalSpeed;
+    const effectiveDuration = def.baseDuration / (globalSpeed * jobSpeed);
 
     j.progress += dt;
 
-    if (j.progress >= effective) {
-      j.progress -= effective;
-      j.level++;
+    if (j.progress >= effectiveDuration) {
+      j.progress -= effectiveDuration;
 
-      const baseGain = 1 * jobYield * allGain;
-      state[def.resource] += baseGain;
+      // Dust gain
+      const gain = def.baseYield * jobYield;
+      state.dust += gain;
+
+      // Floating text (optional)
+      if (j._ui) {
+        const rect = j._ui.fill.getBoundingClientRect();
+        floatText(`+${gain.toFixed(0)} Dust`, rect, "#facc15");
+      }
     }
   });
 }
@@ -82,21 +78,16 @@ function tickJobs(dt) {
    ---------------------------- */
 
 function renderJobs() {
-  jobDefs.forEach(def => {
-    if (!jobUnlocked(def)) return;
+  const globalSpeed = state.globalSpeedMult;
+  const jobSpeed = state.jobSpeedMult;
 
+  jobDefs.forEach(def => {
     const j = state.jobs[def.id];
     if (!j._ui) return;
 
-    // Update level text
-    j._ui.level.textContent = "Lv " + j.level;
+    const effectiveDuration = def.baseDuration / (globalSpeed * jobSpeed);
+    const pct = Math.min(100, (j.progress / effectiveDuration) * 100);
 
-    // Update progress bar
-    const duration = def.baseDuration * Math.pow(1 + def.durationGrowth, j.level);
-    const globalSpeed = getGlobalSpeedMult();
-    const effective = duration / globalSpeed;
-
-    const pct = Math.min(100, (j.progress / effective) * 100);
     j._ui.fill.style.width = pct + "%";
   });
 }
