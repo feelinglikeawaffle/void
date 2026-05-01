@@ -7,7 +7,6 @@ function init() {
 
   setupTabs();
   buildUI();
-
   generateHirePool();   // <-- ADD THIS LINE
 
   render();
