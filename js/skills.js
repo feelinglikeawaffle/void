@@ -7,7 +7,8 @@ if (!state.skills) {
     id: def.id,
     level: 0,
     xp: 0,
-    unlocked: !!def.unlockedByDefault
+    unlocked: !!def.unlockedByDefault,
+    justLeveled: false
   }));
 }
 
@@ -56,6 +57,7 @@ function tickSkills(dt) {
     if (skill.xp >= needed) {
       skill.xp -= needed;
       skill.level++;
+      skill.justLeveled = true;
     }
   });
 }
