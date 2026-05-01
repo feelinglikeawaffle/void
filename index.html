@@ -34,9 +34,28 @@
   </div>
 
   <div id="tab-jobs" class="tab">
-    <h2>Entities</h2>
-    <div id="jobs-container"></div>
+  <h2>Entities</h2>
+
+  <!-- Hire Button -->
+  <button id="open-hire-menu">Hire Entities</button>
+  <div id="hire-timer" style="margin-top:6px; opacity:0.8; font-size:13px;">
+    Next refresh in: 5:00
   </div>
+
+  <!-- Owned Entities -->
+  <div id="jobs-container"></div>
+</div>
+
+<!-- HIRE MODAL -->
+<div id="hire-modal" class="modal hidden">
+  <div class="modal-content">
+    <h3>Hire Entities</h3>
+
+    <div id="hire-container"></div>
+
+    <button id="close-hire-menu" style="margin-top:10px;">Close</button>
+  </div>
+</div>
 
   <div id="tab-void" class="tab">
     <h2>Void</h2>
