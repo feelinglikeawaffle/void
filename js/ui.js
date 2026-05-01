@@ -81,13 +81,20 @@ function renderSkills() {
       div.innerHTML = `
         <div class="skill-name">${def.name} (Lv ${skill.level})</div>
         <div class="skill-desc">${def.desc}</div>
+
         <div class="skill-xp-bar">
           <div class="skill-xp-fill" style="width:${pct}%;"></div>
         </div>
+
         <div class="skill-xp-text">
           ${skill.xp.toFixed(1)} / ${needed.toFixed(1)} XP
         </div>
       `;
+
+      if (skill.justLeveled) {
+        div.classList.add("skill-level-up");
+        skill.justLeveled = false;
+      }
     }
 
     container.appendChild(div);
