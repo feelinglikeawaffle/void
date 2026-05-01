@@ -1,83 +1,77 @@
 /* ============================
-   ENTITY GENERATOR
+   ENTITY GENERATOR (HIRE MENU)
    ============================ */
 
-/* ----------------------------
-   Name Pools
-   ---------------------------- */
+const HIRE_POOL_SIZE = 6;
+const HIRE_REFRESH_TIME = 5 * 60; // 5 minutes in seconds
+const EARLY_REFRESH_COST = 25; // Dust cost for early refresh
 
-const namePrefixes = [
-  "Void", "Echo", "Dust", "Iron", "Shadow",
-  "Astral", "Prime", "Omega", "Nova", "Quantum"
+// Weighted star rarity
+const STAR_WEIGHTS = [
+  60, // 0★
+  25, // 1★
+  10, // 2★
+  3,  // 3★
+  1,  // 4★
+  0.5,// 5★
+  0.3,// 6★
+  0.1 // 7★
 ];
 
-const nameCores = [
-  "Worker", "Harvester", "Miner", "Collector",
-  "Extractor", "Drone", "Servitor", "Golem",
-  "Automaton", "Construct"
-];
+state.hire = {
+  pool: [],
+  timer: HIRE_REFRESH_TIME
+};
 
-/* ----------------------------
-   Generate a Random Entity
-   ---------------------------- */
+function rollStar() {
+  const total = STAR_WEIGHTS.reduce((a, b) => a + b, 0);
+  let roll = Math.random() * total;
+
+  for (let i = 0; i < STAR_WEIGHTS.length; i++) {
+    if (roll < STAR_WEIGHTS[i]) return i;
+    roll -= STAR_WEIGHTS[i];
+  }
+  return 0;
+}
 
 function generateEntity() {
-  const stars = rollStars();
-  const base = rollBaseStats(stars);
+  const star = rollStar();
 
   return {
-    name: generateName(),
-    stars: stars,
-    dps: base.dps,
-    speed: base.speed,
-    efficiency: base.efficiency,
+    id: "ent_" + Math.random().toString(36).slice(2),
+    name: "Entity " + Math.floor(Math.random() * 9999),
+    star: star,
+    baseDust: 1 + star * 0.5,
+    efficiency: 1 + star * 0.1,
+    speed: 1 + star * 0.05,
+    luck: 1,
     progress: 0
   };
 }
 
-/* ----------------------------
-   Star Rating (1–5)
-   ---------------------------- */
-
-function rollStars() {
-  const r = Math.random();
-
-  if (r < 0.60) return 1;   // 60%
-  if (r < 0.85) return 2;   // 25%
-  if (r < 0.95) return 3;   // 10%
-  if (r < 0.99) return 4;   // 4%
-  return 5;                 // 1%
+function generateHirePool() {
+  state.hire.pool = [];
+  for (let i = 0; i < HIRE_POOL_SIZE; i++) {
+    state.hire.pool.push(generateEntity());
+  }
 }
 
-/* ----------------------------
-   Base Stats by Star Rating
-   ---------------------------- */
+function hireEntity(id) {
+  const ent = state.hire.pool.find(e => e.id === id);
+  if (!ent) return;
 
-function rollBaseStats(stars) {
-  // Stars scale stats multiplicatively
-  const mult = 1 + stars * 0.25;
+  // Add to owned entities
+  state.entities.push(ent);
 
-  return {
-    dps: randRange(1, 3) * mult,
-    speed: randRange(0.5, 1.5) * mult,
-    efficiency: randRange(0.8, 1.2) * mult
-  };
+  // Remove from hire pool
+  state.hire.pool = state.hire.pool.filter(e => e.id !== id);
 }
 
-/* ----------------------------
-   Random Name Generator
-   ---------------------------- */
+function earlyRefreshHirePool() {
+  if (state.resources.dust < EARLY_REFRESH_COST) return false;
 
-function generateName() {
-  const pre = namePrefixes[Math.floor(Math.random() * namePrefixes.length)];
-  const core = nameCores[Math.floor(Math.random() * nameCores.length)];
-  return `${pre} ${core}`;
-}
-
-/* ----------------------------
-   Utility — Random Range
-   ---------------------------- */
-
-function randRange(min, max) {
-  return Math.random() * (max - min) + min;
+  state.resources.dust -= EARLY_REFRESH_COST;
+  state.hire.timer = HIRE_REFRESH_TIME;
+  generateHirePool();
+  return true;
 }
