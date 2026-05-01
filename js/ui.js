@@ -58,11 +58,6 @@ function renderSkills() {
 
   container.innerHTML = "";
 
-  if (typeof skillDefs === "undefined" || typeof getSkillState === "undefined") {
-    container.textContent = "Skills not initialized.";
-    return;
-  }
-
   skillDefs.forEach(def => {
     const skill = getSkillState(def.id);
     const div = document.createElement("div");
@@ -103,7 +98,7 @@ function renderSkills() {
   });
 }
 
-/* ---------- ENTITIES (YOUR VERSION) ---------- */
+/* ---------- ENTITIES ---------- */
 
 function renderJobs() {
   const container = document.getElementById("jobs-container");
@@ -111,27 +106,19 @@ function renderJobs() {
 
   container.innerHTML = "";
 
-  if (!state.entities) return;
-
   state.entities.forEach(entity => {
     const div = document.createElement("div");
     div.className = "entity-card";
 
     const starColors = [
-      "#8b0000", // 0★ dark red
-      "#ff0000", // 1★ red
-      "#ff7f00", // 2★ orange
-      "#ffff00", // 3★ yellow
-      "#00ff00", // 4★ green
-      "#0000ff", // 5★ blue
-      "#8000ff", // 6★ purple
-      "#00008b"  // 7★ dark blue
+      "#8b0000", "#ff0000", "#ff7f00", "#ffff00",
+      "#00ff00", "#0000ff", "#8000ff", "#00008b"
     ];
-    const starColor = starColors[Math.max(0, Math.min(7, entity.star || 0))];
+    const starColor = starColors[entity.star];
 
     const starMult = getStarMultiplier(entity.star);
     const dustPerCycle = entity.baseDust * entity.efficiency * starMult;
-    const progressPct = Math.max(0, Math.min(100, entity.progress * 100));
+    const progressPct = entity.progress * 100;
 
     div.innerHTML = `
       <div class="entity-name">${entity.name}</div>
@@ -139,9 +126,7 @@ function renderJobs() {
         ⭐ ${entity.star} Star
       </div>
       <div class="entity-stats">
-        <div>Base Dust/Cycle: ${entity.baseDust}</div>
-        <div>Star Multiplier: x${starMult}</div>
-        <div>Effective Dust/Cycle: ${dustPerCycle.toFixed(1)}</div>
+        <div>Dust/Cycle: ${dustPerCycle.toFixed(1)}</div>
         <div>Speed: ${entity.speed.toFixed(2)}</div>
         <div>Efficiency: ${entity.efficiency.toFixed(2)}</div>
       </div>
@@ -156,17 +141,15 @@ function renderJobs() {
     container.appendChild(div);
   });
 
-  container.querySelectorAll(".star-btn").forEach(btn => {
+  document.querySelectorAll(".star-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const id = btn.getAttribute("data-id");
-      if (typeof starUpEntity === "function") {
-        starUpEntity(id);
-      }
+      starUpEntity(id);
     });
   });
 }
 
-/* ---------- HIRE MENU UI ---------- */
+/* ---------- HIRE MENU ---------- */
 
 function openHireMenu() {
   document.getElementById("hire-modal").classList.remove("hidden");
@@ -186,7 +169,6 @@ function renderHireMenu() {
       "#8b0000", "#ff0000", "#ff7f00", "#ffff00",
       "#00ff00", "#0000ff", "#8000ff", "#00008b"
     ];
-
     const starColor = starColors[ent.star];
 
     container.innerHTML += `
@@ -212,11 +194,12 @@ function renderHireMenu() {
   });
 }
 
-/* ---------- Hook Buttons ---------- */
-
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("open-hire-menu").onclick = openHireMenu;
-  document.getElementById("close-hire-menu").onclick = closeHireMenu;
+  const openBtn = document.getElementById("open-hire-menu");
+  const closeBtn = document.getElementById("close-hire-menu");
+
+  if (openBtn) openBtn.onclick = openHireMenu;
+  if (closeBtn) closeBtn.onclick = closeHireMenu;
 });
 
 /* ---------- Void ---------- */
