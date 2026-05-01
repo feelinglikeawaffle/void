@@ -1,27 +1,63 @@
 /* ============================
-   GLOBAL
+   GLOBAL POLISH
    ============================ */
 
-body {
-  background: #0a0a0f;
-  color: #e0e0ff;
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
+:root {
+  --bg: #0a0a0f;
+  --bg-panel: #111122;
+  --bg-panel-dark: #0d0d15;
+  --border: #222233;
+  --border-light: #333344;
+  --text: #e0e0ff;
+  --text-soft: #b8b8d8;
+  --accent: #444488;
+  --transition: 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-h2, h3 {
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+#game-root {
+  width: 100%;
+  max-width: 1100px;
+  padding-bottom: 40px;
+}
+
+h2 {
   margin-top: 0;
-  color: #b0b0ff;
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+h3 {
+  margin-top: 20px;
+  color: var(--text-soft);
+  font-size: 17px;
+  font-weight: 500;
 }
 
 button {
-  background: #222244;
-  color: #e0e0ff;
-  border: 1px solid #444466;
-  padding: 6px 12px;
+  background: var(--bg-panel-dark);
+  color: var(--text);
+  border: 1px solid var(--border-light);
+  padding: 8px 14px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
+  transition: var(--transition);
+}
+
+button:hover:not(:disabled) {
+  background: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(80, 80, 160, 0.25);
 }
 
 button:disabled {
@@ -29,38 +65,75 @@ button:disabled {
   cursor: default;
 }
 
-button:hover:not(:disabled) {
-  background: #333366;
+
+/* ============================
+   RESOURCE BAR (POLISHED)
+   ============================ */
+
+#resource-bar {
+  display: flex;
+  gap: 20px;
+  padding: 12px 0;
+  background: var(--bg-panel-dark);
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+#resource-bar span {
+  opacity: 0.9;
+  transition: var(--transition);
+}
+
+#resource-bar span:hover {
+  opacity: 1;
+  transform: translateY(-1px);
 }
 
 
 /* ============================
-   TABS
+   TABS (POLISHED)
    ============================ */
 
 #top-bar {
   display: flex;
-  gap: 8px;
-  padding: 10px;
-  background: #111122;
-  border-bottom: 2px solid #222233;
+  gap: 10px;
+  padding: 12px 0;
+  background: var(--bg-panel);
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 48px;
+  z-index: 10;
 }
 
 .tab-btn {
-  padding: 8px 14px;
+  padding: 10px 18px;
+  border-radius: 6px;
+  background: var(--bg-panel-dark);
+  transition: var(--transition);
 }
 
 .tab-btn.active {
-  background: #444488;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(120, 120, 255, 0.3);
 }
 
 .tab {
   display: none;
   padding: 20px;
+  animation: fadeIn 0.35s ease-out;
 }
 
 .tab.active {
   display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 
@@ -71,9 +144,15 @@ button:hover:not(:disabled) {
 .skill-card {
   margin-bottom: 12px;
   padding: 12px;
-  background: #111122;
-  border: 1px solid #222233;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
   border-radius: 6px;
+  transition: var(--transition);
+}
+
+.skill-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(120, 120, 255, 0.15);
 }
 
 .skill-name {
@@ -139,9 +218,15 @@ button:hover:not(:disabled) {
 .entity-card {
   padding: 12px;
   margin-bottom: 12px;
-  background: #111122;
-  border: 1px solid #222233;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
   border-radius: 6px;
+  transition: var(--transition);
+}
+
+.entity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(80, 255, 200, 0.15);
 }
 
 .entity-name {
@@ -150,7 +235,6 @@ button:hover:not(:disabled) {
 }
 
 .entity-stars {
-  color: gold;
   margin-bottom: 6px;
 }
 
@@ -203,11 +287,12 @@ button:hover:not(:disabled) {
 }
 
 .modal-content {
-  background: #111122;
+  background: var(--bg-panel);
   padding: 20px;
-  border: 1px solid #333344;
+  border: 1px solid var(--border-light);
   border-radius: 6px;
   width: 400px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
 }
 
 .hire-row {
@@ -216,6 +301,12 @@ button:hover:not(:disabled) {
   border: 1px solid #333344;
   margin-bottom: 10px;
   border-radius: 4px;
+  transition: var(--transition);
+}
+
+.hire-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(120, 120, 255, 0.15);
 }
 
 .hire-name {
@@ -236,10 +327,17 @@ button:hover:not(:disabled) {
 .shop-row,
 .shop-upgrade {
   padding: 10px;
-  background: #111122;
-  border: 1px solid #222233;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
   border-radius: 4px;
   margin-bottom: 10px;
+  transition: var(--transition);
+}
+
+.shop-row:hover,
+.shop-upgrade:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(120, 120, 255, 0.15);
 }
 
 .shop-name {
@@ -265,10 +363,16 @@ button:hover:not(:disabled) {
 
 .prestige-block {
   padding: 12px;
-  background: #111122;
-  border: 1px solid #222233;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
   border-radius: 4px;
   margin-bottom: 12px;
+  transition: var(--transition);
+}
+
+.prestige-block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(255, 200, 80, 0.15);
 }
 
 
@@ -280,7 +384,7 @@ button:hover:not(:disabled) {
   height: 150px;
   overflow-y: auto;
   background: #08080c;
-  border-top: 2px solid #222233;
+  border-top: 2px solid var(--border);
   padding: 10px;
   font-size: 13px;
 }
