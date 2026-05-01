@@ -30,20 +30,22 @@ function buildUI() {
 /* ---------- Resource Bar ---------- */
 
 function renderResources() {
+  const r = state.resources;
+
   document.getElementById("res-dust").textContent =
-    "Dust: " + state.resources.dust;
+    "Dust: " + (r.dust ?? 0);
 
   document.getElementById("res-void").textContent =
-    "Void: " + state.resources.void;
+    "Void: " + (r.void ?? 0);
 
   document.getElementById("res-ascend").textContent =
-    "Ascendant Shards: " + state.resources.ascend;
+    "Ascendant Shards: " + (r.ascend ?? 0);
 
   document.getElementById("res-transcend").textContent =
-    "Transcendent Essence: " + state.resources.transcend;
+    "Transcendent Essence: " + (r.transcend ?? 0);
 
   document.getElementById("res-eternal").textContent =
-    "Eternal Embers: " + state.resources.eternal;
+    "Eternal Embers: " + (r.eternal ?? 0);
 }
 
 /* ---------- Skills ---------- */
@@ -53,6 +55,11 @@ function renderSkills() {
   if (!container) return;
 
   container.innerHTML = "";
+
+  if (typeof skillDefs === "undefined" || typeof getSkillState === "undefined") {
+    container.textContent = "Skills system not initialized.";
+    return;
+  }
 
   skillDefs.forEach(def => {
     const skill = getSkillState(def.id);
@@ -95,6 +102,8 @@ function renderJobs() {
 
   container.innerHTML = "";
 
+  if (!state.entities) return;
+
   state.entities.forEach(entity => {
     const div = document.createElement("div");
     div.className = "entity-card";
@@ -117,7 +126,9 @@ function renderJobs() {
   container.querySelectorAll(".star-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const id = btn.getAttribute("data-id");
-      starUpEntity(id);
+      if (typeof starUpEntity === "function") {
+        starUpEntity(id);
+      }
     });
   });
 }
@@ -128,9 +139,8 @@ function renderVoid() {
   const container = document.getElementById("void-actions");
   if (!container) return;
 
-  // keep this simple for now or hook into your existing void.js
   container.innerHTML = `
-    <div>Void: ${state.resources.void}</div>
+    <div>Void: ${state.resources.void ?? 0}</div>
   `;
 }
 
@@ -148,13 +158,13 @@ function renderPrestige() {
   const eternalInfo = document.getElementById("eternal-info");
 
   if (ascendInfo) {
-    ascendInfo.textContent = "Ascendant Shards: " + state.resources.ascend;
+    ascendInfo.textContent = "Ascendant Shards: " + (state.resources.ascend ?? 0);
   }
   if (transcendInfo) {
-    transcendInfo.textContent = "Transcendent Essence: " + state.resources.transcend;
+    transcendInfo.textContent = "Transcendent Essence: " + (state.resources.transcend ?? 0);
   }
   if (eternalInfo) {
-    eternalInfo.textContent = "Eternal Embers: " + state.resources.eternal;
+    eternalInfo.textContent = "Eternal Embers: " + (state.resources.eternal ?? 0);
   }
 }
 
