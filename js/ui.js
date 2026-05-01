@@ -166,6 +166,59 @@ function renderJobs() {
   });
 }
 
+/* ---------- HIRE MENU UI ---------- */
+
+function openHireMenu() {
+  document.getElementById("hire-modal").classList.remove("hidden");
+  renderHireMenu();
+}
+
+function closeHireMenu() {
+  document.getElementById("hire-modal").classList.add("hidden");
+}
+
+function renderHireMenu() {
+  const container = document.getElementById("hire-container");
+  container.innerHTML = "";
+
+  state.hire.pool.forEach(ent => {
+    const starColors = [
+      "#8b0000", "#ff0000", "#ff7f00", "#ffff00",
+      "#00ff00", "#0000ff", "#8000ff", "#00008b"
+    ];
+
+    const starColor = starColors[ent.star];
+
+    container.innerHTML += `
+      <div class="hire-row">
+        <div class="hire-name" style="color:${starColor}">
+          ⭐ ${ent.star} — ${ent.name}
+        </div>
+        <div class="hire-stats">
+          Dust/Cycle: ${(ent.baseDust * ent.efficiency).toFixed(1)}<br>
+          Speed: ${ent.speed.toFixed(2)}<br>
+          Efficiency: ${ent.efficiency.toFixed(2)}
+        </div>
+        <button class="hire-btn" data-id="${ent.id}">Hire</button>
+      </div>
+    `;
+  });
+
+  document.querySelectorAll(".hire-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      hireEntity(btn.getAttribute("data-id"));
+      renderHireMenu();
+    });
+  });
+}
+
+/* ---------- Hook Buttons ---------- */
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("open-hire-menu").onclick = openHireMenu;
+  document.getElementById("close-hire-menu").onclick = closeHireMenu;
+});
+
 /* ---------- Void ---------- */
 
 function renderVoid() {
