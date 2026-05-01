@@ -33,20 +33,21 @@ function renderResources() {
   const r = state.resources;
 
   document.getElementById("res-dust").textContent =
-    "Dust: " + (r.dust ?? 0);
+    "Dust: " + Math.round(r.dust);
 
   document.getElementById("res-void").textContent =
-    "Void: " + (r.void ?? 0);
+    "Void: " + Math.round(r.void);
 
   document.getElementById("res-ascend").textContent =
-    "Ascendant Shards: " + (r.ascend ?? 0);
+    "Ascendant Shards: " + Math.round(r.ascend);
 
   document.getElementById("res-transcend").textContent =
-    "Transcendent Essence: " + (r.transcend ?? 0);
+    "Transcendent Essence: " + Math.round(r.transcend);
 
   document.getElementById("res-eternal").textContent =
-    "Eternal Embers: " + (r.eternal ?? 0);
+    "Eternal Embers: " + Math.round(r.eternal);
 }
+
 
 /* ---------- Skills ---------- */
 
