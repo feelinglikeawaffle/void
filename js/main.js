@@ -5,13 +5,16 @@
 function init() {
   console.log("INIT: Starting game initialization.");
 
-  setupTabs();     // from ui.js
-  buildUI();       // from ui.js
-  render();        // from ui.js
+  setupTabs();
+  buildUI();
 
-  tick();          // from tick.js
+  generateHirePool();   // <-- ADD THIS LINE
+
+  render();
+  tick();
 
   console.log("INIT: Game initialized successfully.");
 }
+
 
 window.addEventListener("load", init);
