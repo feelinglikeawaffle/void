@@ -13,18 +13,21 @@ const state = {
 
   multipliers: {
     skillXp: 1,
-    voidGain: 1
+    voidGain: 1,
+    entitySpeed: 1 // global speed multiplier for entities
   },
 
+  // Owned entities (you can expand or randomize later)
   entities: [
     {
-      id: "slime_1",
-      name: "Void Slime",
-      stars: 0,
-      dps: 1,
-      speed: 1,
-      luck: 1,
-      efficiency: 1
+      id: "worker_1",
+      name: "Dust Gatherer",
+      star: 0,           // 0–7
+      baseDust: 1,       // dust per cycle before multipliers
+      efficiency: 1,     // multiplier on dust
+      speed: 1,          // 1.0 = base speed
+      luck: 1,           // reserved for future crit/bonus
+      progress: 0        // 0–1 progress toward next cycle
     }
   ]
 };
