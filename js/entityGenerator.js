@@ -3,19 +3,11 @@
    ============================ */
 
 const HIRE_POOL_SIZE = 6;
-const HIRE_REFRESH_TIME = 5 * 60; // 5 minutes in seconds
-const EARLY_REFRESH_COST = 25; // Dust cost for early refresh
+const HIRE_REFRESH_TIME = 5 * 60; // 5 minutes
+const EARLY_REFRESH_COST = 25;
 
-// Weighted star rarity
 const STAR_WEIGHTS = [
-  60, // 0★
-  25, // 1★
-  10, // 2★
-  3,  // 3★
-  1,  // 4★
-  0.5,// 5★
-  0.3,// 6★
-  0.1 // 7★
+  60, 25, 10, 3, 1, 0.5, 0.3, 0.1
 ];
 
 state.hire = {
@@ -32,6 +24,16 @@ function rollStar() {
     roll -= STAR_WEIGHTS[i];
   }
   return 0;
+}
+
+function getHireCost(star) {
+  const base = 10 * Math.pow(star + 1, 2);
+  const mult = Math.pow(1.15, state.entities.length);
+  return Math.floor(base * mult);
+}
+
+function getStarUpCost(star) {
+  return Math.floor(50 * Math.pow(3, star));
 }
 
 function generateEntity() {
@@ -60,10 +62,13 @@ function hireEntity(id) {
   const ent = state.hire.pool.find(e => e.id === id);
   if (!ent) return;
 
-  // Add to owned entities
+  const cost = getHireCost(ent.star);
+  if (state.resources.dust < cost) return;
+
+  state.resources.dust -= cost;
+
   state.entities.push(ent);
 
-  // Remove from hire pool
   state.hire.pool = state.hire.pool.filter(e => e.id !== id);
 }
 
