@@ -118,23 +118,26 @@ function renderJobs() {
     const dustPerCycle = entity.baseDust * entity.efficiency * starMult;
     const progressPct = entity.progress * 100;
 
-    div.innerHTML = `
-      <div class="entity-name">${entity.name}</div>
-      <div class="entity-stars" style="color:${starColor}">
-        ⭐ ${entity.star} Star
-      </div>
-      <div class="entity-stats">
-        <div>Dust/Cycle: ${dustPerCycle.toFixed(1)}</div>
-        <div>Speed: ${entity.speed.toFixed(2)}</div>
-        <div>Efficiency: ${entity.efficiency.toFixed(2)}</div>
-      </div>
+div.innerHTML = `
+  <div class="entity-name">${entity.name}</div>
+  <div class="entity-stars" style="color:${starColor}">
+    ⭐ ${entity.star} Star
+  </div>
 
-      <div class="entity-progress-bar">
-        <div class="entity-progress-fill" style="width:${progressPct}%;"></div>
-      </div>
+  <div class="entity-stats">
+    <div>Dust/Cycle: ${dustPerCycle.toFixed(1)}</div>
+    <div>Speed: ${entity.speed.toFixed(2)}</div>
+    <div>Efficiency: ${entity.efficiency.toFixed(2)}</div>
+    <div><b>Star‑Up Cost:</b> ${getStarUpCost(entity.star)} Dust</div>
+  </div>
 
-      <button class="star-btn" data-id="${entity.id}">Star Up</button>
-    `;
+  <div class="entity-progress-bar">
+    <div class="entity-progress-fill" style="width:${progressPct}%;"></div>
+  </div>
+
+  <button class="star-btn" data-id="${entity.id}">Star Up</button>
+`;
+
 
     container.appendChild(div);
   });
