@@ -34,23 +34,6 @@ function buildUI() {
 function renderResources() {
   const r = state.resources;
 
-  // TOP BAR
-  document.getElementById("res-dust").textContent =
-    "Dust: " + Math.round(r.dust);
-
-  document.getElementById("res-void").textContent =
-    "Void: " + Math.round(r.void);
-
-  document.getElementById("res-ascend").textContent =
-    "Ascendant Shards: " + Math.round(r.ascend);
-
-  document.getElementById("res-transcend").textContent =
-    "Transcendent Essence: " + Math.round(r.transcend);
-
-  document.getElementById("res-eternal").textContent =
-    "Eternal Embers: " + Math.round(r.eternal);
-
-  // SIDEBAR
   const sidebar = document.getElementById("sidebar-res-list");
   if (sidebar) {
     sidebar.innerHTML = `
@@ -62,6 +45,7 @@ function renderResources() {
     `;
   }
 }
+
 
 
 /* ---------- Skills ---------- */
