@@ -7,101 +7,125 @@
 </head>
 
 <body>
+  <div id="game-root">
 
-  <!-- RESOURCE BAR -->
-  <div id="resource-bar">
-    <span id="res-dust">Dust: 0</span>
-    <span id="res-void">Void: 0</span>
-    <span id="res-ascend">Ascendant Shards: 0</span>
-    <span id="res-transcend">Transcendent Essence: 0</span>
-    <span id="res-eternal">Eternal Embers: 0</span>
-  </div>
-
-  <!-- TOP NAV / TABS -->
-  <div id="top-bar">
-    <button class="tab-btn active" data-tab="skills">Skills</button>
-    <button class="tab-btn" data-tab="jobs">Entities</button>
-    <button class="tab-btn" data-tab="void">Void</button>
-    <button class="tab-btn" data-tab="shop">Shop</button>
-    <button class="tab-btn" data-tab="prestige">Prestige</button>
-  </div>
-
-  <!-- TABS -->
-
-  <div id="tab-skills" class="tab active">
-    <h2>Skills</h2>
-    <div id="skills-container"></div>
-  </div>
-
-  <div id="tab-jobs" class="tab">
-  <h2>Entities</h2>
-
-  <!-- Hire Button -->
-  <button id="open-hire-menu">Hire Entities</button>
-  <div id="hire-timer" style="margin-top:6px; opacity:0.8; font-size:13px;">
-    Next refresh in: 5:00
-  </div>
-
-  <!-- Owned Entities -->
-  <div id="jobs-container"></div>
-</div>
-
-<!-- HIRE MODAL -->
-<div id="hire-modal" class="modal hidden">
-  <div class="modal-content">
-    <h3>Hire Entities</h3>
-
-    <div id="hire-container"></div>
-
-    <button id="close-hire-menu" style="margin-top:10px;">Close</button>
-  </div>
-</div>
-
-  <div id="tab-void" class="tab">
-    <h2>Void</h2>
-    <div id="void-actions"></div>
-  </div>
-
-  <div id="tab-shop" class="tab">
-    <h2>Shop</h2>
-
-    <h3>Resource Upgrades</h3>
-    <div id="shop-resource"></div>
-
-    <h3>Void Upgrades</h3>
-    <div id="shop-void"></div>
-
-    <h3>Ascend Upgrades</h3>
-    <div id="shop-ascend"></div>
-
-    <h3>Transcend Upgrades</h3>
-    <div id="shop-transcend"></div>
-
-    <h3>Eternal Upgrades</h3>
-    <div id="shop-eternal"></div>
-  </div>
-
-  <div id="tab-prestige" class="tab">
-    <h2>Prestige</h2>
-
-    <div class="prestige-block">
-      <div id="ascend-info">Ascendant Shards: 0</div>
-      <button id="ascend-btn">Ascend</button>
+    <!-- TOP NAV / TABS -->
+    <div id="top-bar">
+      <button class="tab-btn active" data-tab="skills">Skills</button>
+      <button class="tab-btn" data-tab="jobs">Entities</button>
+      <button class="tab-btn" data-tab="void">Void</button>
+      <button class="tab-btn" data-tab="shop">Shop</button>
+      <button class="tab-btn" data-tab="prestige">Prestige</button>
     </div>
 
-    <div class="prestige-block">
-      <div id="transcend-info">Transcendent Essence: 0</div>
-      <button id="transcend-btn">Transcend</button>
-    </div>
+    <!-- MAIN LAYOUT: LEFT CONTENT + RIGHT SIDEBAR -->
+    <div id="layout">
 
-    <div class="prestige-block">
-      <div id="eternal-info">Eternal Embers: 0</div>
-      <button id="eternal-btn">Eternal</button>
+      <!-- LEFT COLUMN -->
+      <div id="main-column">
+
+        <!-- RESOURCE BAR -->
+        <div id="resource-bar">
+          <span id="res-dust">Dust: 0</span>
+          <span id="res-void">Void: 0</span>
+          <span id="res-ascend">Ascendant Shards: 0</span>
+          <span id="res-transcend">Transcendent Essence: 0</span>
+          <span id="res-eternal">Eternal Embers: 0</span>
+        </div>
+
+        <!-- TABS -->
+
+        <div id="tab-skills" class="tab active">
+          <h2>Skills</h2>
+          <div id="skills-container"></div>
+        </div>
+
+        <div id="tab-jobs" class="tab">
+          <h2>Entities</h2>
+
+          <button id="open-hire-menu">Hire Entities</button>
+          <div id="hire-timer" style="margin-top:6px; opacity:0.8; font-size:13px;">
+            Next refresh in: 5:00
+          </div>
+
+          <div id="jobs-container"></div>
+        </div>
+
+        <div id="tab-void" class="tab">
+          <h2>Void</h2>
+          <div id="void-actions"></div>
+        </div>
+
+        <div id="tab-shop" class="tab">
+          <h2>Shop</h2>
+
+          <h3>Resource Upgrades</h3>
+          <div id="shop-resource"></div>
+
+          <h3>Void Upgrades</h3>
+          <div id="shop-void"></div>
+
+          <h3>Ascend Upgrades</h3>
+          <div id="shop-ascend"></div>
+
+          <h3>Transcend Upgrades</h3>
+          <div id="shop-transcend"></div>
+
+          <h3>Eternal Upgrades</h3>
+          <div id="shop-eternal"></div>
+        </div>
+
+        <div id="tab-prestige" class="tab">
+          <h2>Prestige</h2>
+
+          <div class="prestige-block">
+            <div id="ascend-info">Ascendant Shards: 0</div>
+            <button id="ascend-btn">Ascend</button>
+          </div>
+
+          <div class="prestige-block">
+            <div id="transcend-info">Transcendent Essence: 0</div>
+            <button id="transcend-btn">Transcend</button>
+          </div>
+
+          <div class="prestige-block">
+            <div id="eternal-info">Eternal Embers: 0</div>
+            <button id="eternal-btn">Eternal</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDEBAR (FIXED) -->
+      <div id="sidebar">
+
+        <div id="sidebar-resources">
+          <h3>Resources</h3>
+          <div id="sidebar-res-list">
+            <!-- Filled dynamically if you want -->
+          </div>
+        </div>
+
+        <div id="sidebar-extra">
+          <h3>Your Choice</h3>
+          <div id="log"></div>
+        </div>
+
+      </div>
+
     </div>
   </div>
 
-  <!-- LOG PANEL -->
-  <div id="log"></div>
+  <!-- HIRE MODAL -->
+  <div id="hire-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Hire Entities</h3>
+
+      <div id="hire-container"></div>
+
+      <button id="close-hire-menu" style="margin-top:10px;">Close</button>
+    </div>
+  </div>
 
   <!-- ERUDA -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
@@ -133,28 +157,6 @@
   <script src="js/ui.js"></script>
   <script src="js/tick.js"></script>
   <script src="js/main.js"></script>
-
-  <!-- SCRIPT LOAD DETECTOR -->
-  <script>
-    const expectedScripts = [
-      "js/elements.js","js/state.js","js/skillDefs.js","js/entityGenerator.js",
-      "js/skills.js","js/jobs.js","js/void.js","js/shopDefs.js","js/shop.js",
-      "js/prestige.js","js/ui.js","js/tick.js","js/main.js"
-    ];
-
-    expectedScripts.forEach(name => {
-      const tag = document.querySelector(`script[src="${name}"]`);
-      if (!tag) {
-        console.error("SCRIPT TAG MISSING:", name);
-      } else {
-        tag.addEventListener("error", () => {
-          console.error("FAILED TO LOAD SCRIPT:", name);
-        });
-      }
-    });
-
-    console.log("INDEX: Script loader detector active.");
-  </script>
 
 </body>
 </html>
