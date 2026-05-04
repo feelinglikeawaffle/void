@@ -79,15 +79,13 @@ function renderJobs() {
 }
 
 function starUpEntity(id) {
-  const entity = state.entities.find(e => e.id === id);
-  if (!entity || entity.star >= 7) return;
+  const ent = state.entities.find(e => e.id === id);
+  if (!ent) return;
 
-  const cost = Math.pow(10, entity.star + 1);
+  const cost = getStarUpCost(ent.star);
   if (state.resources.dust < cost) return;
 
   state.resources.dust -= cost;
-  entity.star++;
-  entity.baseDust *= 1.5;
-  entity.speed *= 1.1;
-  entity.efficiency *= 1.1;
+  ent.star += 1;
 }
+
