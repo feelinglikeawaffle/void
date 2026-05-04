@@ -217,3 +217,20 @@ body {
   font-size: 13px;
   border-radius: 6px;
 }
+
+/* ============================
+   TEXT COLOR CLEANUP
+   ============================ */
+
+body, #sidebar, #main-column, h2, h3, span, div, button {
+  color: #ffffff !important;
+}
+
+#resource-bar span {
+  color: #ffffff !important;
+}
+
+#sidebar-res-list div {
+  color: #ffffff !important;
+}
+
