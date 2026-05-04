@@ -33,3 +33,12 @@ function tickHireTimer(dt) {
   const timerEl = document.getElementById("hire-timer");
   if (timerEl) timerEl.textContent = `Next refresh in: ${m}:${s}`;
 }
+
+
+  const t = Math.max(0, Math.floor(state.hire.timer));
+  const m = Math.floor(t / 60);
+  const s = (t % 60).toString().padStart(2, "0");
+
+  const timerEl = document.getElementById("hire-timer");
+  if (timerEl) timerEl.textContent = `Next refresh in: ${m}:${s}`;
+}
