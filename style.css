@@ -234,3 +234,14 @@ body, #sidebar, #main-column, h2, h3, span, div, button {
   color: #ffffff !important;
 }
 
+/* BUTTON FIX — keep dark buttons even with white text override */
+button {
+  background: #222244 !important;
+  color: #ffffff !important;
+  border: 1px solid #444466 !important;
+}
+
+button:hover:not(:disabled) {
+  background: #333366 !important;
+}
+
