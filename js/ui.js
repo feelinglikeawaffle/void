@@ -170,7 +170,6 @@ function renderHireMenu() {
 
     const starColor = starColors[ent.star];
     const hireCost = getHireCost(ent.star);
-    const starUpCost = getStarUpCost(ent.star);
 
     container.innerHTML += `
       <div class="hire-row">
@@ -183,8 +182,7 @@ function renderHireMenu() {
           Speed: ${ent.speed.toFixed(2)}<br>
           Efficiency: ${ent.efficiency.toFixed(2)}<br><br>
 
-          <b>Hire Cost:</b> ${hireCost} Dust<br>
-          <b>Star‑Up Cost:</b> ${starUpCost} Dust
+          <b>Hire Cost:</b> ${hireCost} Dust
         </div>
 
         <button class="hire-btn" data-id="${ent.id}">Hire</button>
@@ -199,6 +197,7 @@ function renderHireMenu() {
     });
   });
 }
+
 
 
 document.addEventListener("DOMContentLoaded", () => {
