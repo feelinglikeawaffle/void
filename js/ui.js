@@ -167,18 +167,26 @@ function renderHireMenu() {
       "#8b0000", "#ff0000", "#ff7f00", "#ffff00",
       "#00ff00", "#0000ff", "#8000ff", "#00008b"
     ];
+
     const starColor = starColors[ent.star];
+    const hireCost = getHireCost(ent.star);
+    const starUpCost = getStarUpCost(ent.star);
 
     container.innerHTML += `
       <div class="hire-row">
         <div class="hire-name" style="color:${starColor}">
           ⭐ ${ent.star} — ${ent.name}
         </div>
+
         <div class="hire-stats">
           Dust/Cycle: ${(ent.baseDust * ent.efficiency).toFixed(1)}<br>
           Speed: ${ent.speed.toFixed(2)}<br>
-          Efficiency: ${ent.efficiency.toFixed(2)}
+          Efficiency: ${ent.efficiency.toFixed(2)}<br><br>
+
+          <b>Hire Cost:</b> ${hireCost} Dust<br>
+          <b>Star‑Up Cost:</b> ${starUpCost} Dust
         </div>
+
         <button class="hire-btn" data-id="${ent.id}">Hire</button>
       </div>
     `;
@@ -191,6 +199,7 @@ function renderHireMenu() {
     });
   });
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const openBtn = document.getElementById("open-hire-menu");
