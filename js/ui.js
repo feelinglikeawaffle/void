@@ -34,6 +34,7 @@ function buildUI() {
 function renderResources() {
   const r = state.resources;
 
+  // TOP BAR
   document.getElementById("res-dust").textContent =
     "Dust: " + Math.round(r.dust);
 
@@ -48,7 +49,20 @@ function renderResources() {
 
   document.getElementById("res-eternal").textContent =
     "Eternal Embers: " + Math.round(r.eternal);
+
+  // SIDEBAR
+  const sidebar = document.getElementById("sidebar-res-list");
+  if (sidebar) {
+    sidebar.innerHTML = `
+      <div>Dust: ${Math.round(r.dust)}</div>
+      <div>Void: ${Math.round(r.void)}</div>
+      <div>Ascendant Shards: ${Math.round(r.ascend)}</div>
+      <div>Transcendent Essence: ${Math.round(r.transcend)}</div>
+      <div>Eternal Embers: ${Math.round(r.eternal)}</div>
+    `;
+  }
 }
+
 
 /* ---------- Skills ---------- */
 
