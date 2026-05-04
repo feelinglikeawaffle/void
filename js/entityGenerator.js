@@ -36,6 +36,7 @@ function getStarUpCost(star) {
   return Math.floor(50 * Math.pow(3, star));
 }
 
+
 function generateEntity() {
   const star = rollStar();
 
