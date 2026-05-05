@@ -11,6 +11,7 @@ function tick() {
 
   tickJobs(dt);
   tickSkills(dt);
+  tickVoid(dt);
   tickHireTimer(dt);
   tickVoidReactor(dt);
 
