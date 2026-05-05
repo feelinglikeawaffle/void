@@ -7,13 +7,11 @@ function init() {
 
   setupTabs();
 
-  // REMOVE buildUI() — it no longer exists
-  // buildUI();
+  // buildUI() removed — no longer used
+  generateHirePool();
 
-  generateHirePool();   // still needed
-
-  render();             // initial render
-  tick();               // start game loop
+  render();   // initial render
+  tick();     // start game loop
 
   console.log("INIT: Game initialized successfully.");
 }
