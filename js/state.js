@@ -1,5 +1,5 @@
 /* ============================
-   GLOBAL STATE
+   GAME STATE
    ============================ */
 
 const state = {
@@ -11,23 +11,19 @@ const state = {
     eternal: 0
   },
 
-  multipliers: {
-    skillXp: 1,
-    voidGain: 1,
-    entitySpeed: 1 // global speed multiplier for entities
+  entities: [],
+
+  /* Hire pool */
+  hire: {
+    pool: [],
+    timer: 300 // 5 minutes
   },
 
-  // Owned entities (you can expand or randomize later)
-  entities: [
-    {
-      id: "worker_1",
-      name: "Dust Gatherer",
-      star: 0,           // 0–7
-      baseDust: 1,       // dust per cycle before multipliers
-      efficiency: 1,     // multiplier on dust
-      speed: 1,          // 1.0 = base speed
-      luck: 1,           // reserved for future crit/bonus
-      progress: 0        // 0–1 progress toward next cycle
-    }
-  ]
+  /* Void Reactor */
+  voidReactor: {
+    charge: 0,
+    maxCharge: 100,
+    baseRate: 1,
+    meltdownChance: 0.10
+  }
 };
