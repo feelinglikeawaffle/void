@@ -12,6 +12,7 @@ function tick() {
   tickJobs(dt);
   tickSkills(dt);
   tickVoid(dt);
+  tickVoidReactor(dt);
 
   render(dt);
 
