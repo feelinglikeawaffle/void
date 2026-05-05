@@ -1,53 +1,45 @@
 /* ============================
-   VOID SYSTEM
+   VOID REACTOR SYSTEM
    ============================ */
 
-/* ----------------------------
-   Build Void UI
-   ---------------------------- */
-
-function buildVoidUI() {
-  const root = el.voidActions;
-  if (!root) return;
-
-  root.innerHTML = `
-    <button id="gain-dust-btn">Gain 1 Dust</button>
-
-    <div class="void-stat">
-      <span>Void Favor:</span>
-      <span id="void-favor-value">0</span>
-    </div>
-
-    <div class="void-stat">
-      <span>Void Multiplier:</span>
-      <span id="void-mult-value">1.00x</span>
-    </div>
-  `;
-
-  document.getElementById("gain-dust-btn").addEventListener("click", () => {
-    state.dust += 1;
-    logMessage("Gained 1 Dust.");
-  });
+/* Charge rate = baseRate + (entities * 0.05) */
+function getReactorChargeRate() {
+  return state.voidReactor.baseRate + state.entities.length * 0.05;
 }
 
+/* Tick reactor each frame */
+function tickVoidReactor(dt) {
+  const r = state.voidReactor;
 
-/* ----------------------------
-   Tick — Void Logic
-   ---------------------------- */
+  r.charge += getReactorChargeRate() * (dt / 1000);
 
-function tickVoid(dt) {
-  // Placeholder for future void mechanics
-  // Currently no time-based void generation
+  if (r.charge > r.maxCharge)
+    r.charge = r.maxCharge;
 }
 
+/* Discharge reactor safely */
+function dischargeReactor() {
+  const r = state.voidReactor;
 
-/* ----------------------------
-   Render Void UI
-   ---------------------------- */
+  const gain = Math.floor(r.charge / 10);
+  state.resources.void += gain;
 
-function renderVoid() {
-  if (!el.voidFavor || !el.voidMult) return;
+  r.charge = 0;
+}
 
-  el.voidFavor.textContent = state.voidFavor.toFixed(0);
-  el.voidMult.textContent = state.voidGainMult.toFixed(2) + "x";
+/* Overcharge with meltdown chance */
+function overchargeReactor() {
+  const r = state.voidReactor;
+
+  const gain = Math.floor(r.charge / 10) * 1.5;
+
+  if (Math.random() < r.meltdownChance) {
+    r.charge = 0;
+    return { meltdown: true, gain: 0 };
+  }
+
+  state.resources.void += gain;
+  r.charge = 0;
+
+  return { meltdown: false, gain };
 }
