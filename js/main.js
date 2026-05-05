@@ -6,12 +6,11 @@ function init() {
   console.log("INIT: Starting game initialization.");
 
   setupTabs();
+  initSkills();        // <-- REQUIRED for skill leveling
+  generateHirePool();  // <-- REQUIRED for hire menu
 
-  // buildUI() removed — no longer used
-  generateHirePool();
-
-  render();   // initial render
-  tick();     // start game loop
+  render();            // initial render
+  tick();              // start game loop
 
   console.log("INIT: Game initialized successfully.");
 }
