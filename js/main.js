@@ -6,14 +6,16 @@ function init() {
   console.log("INIT: Starting game initialization.");
 
   setupTabs();
-  buildUI();
-  generateHirePool();   // <-- ADD THIS LINE
 
-  render();
-  tick();
+  // REMOVE buildUI() — it no longer exists
+  // buildUI();
+
+  generateHirePool();   // still needed
+
+  render();             // initial render
+  tick();               // start game loop
 
   console.log("INIT: Game initialized successfully.");
 }
-
 
 window.addEventListener("load", init);
