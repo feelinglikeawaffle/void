@@ -8,26 +8,22 @@ function getStarMultiplier(star) {
 }
 
 function tickJobs(dt) {
-  const seconds = dt / 1000;
-  const speedMult = state.multipliers.entitySpeed || 1;
+  state.entities.forEach(ent => {
 
-  state.entities.forEach(entity => {
-    const effectiveSpeed = entity.speed * speedMult;
-    const cycleTime = 1 / effectiveSpeed;
+    // progress increases based on entity speed
+    ent.progress += ent.speed * (dt / 1000);
 
-    entity.progress += seconds / cycleTime;
+    if (ent.progress >= 1) {
+      ent.progress -= 1;
 
-    if (entity.progress >= 1) {
-      const cycles = Math.floor(entity.progress);
-      entity.progress -= cycles;
+      const starMult = getStarMultiplier(ent.star);
+      const gain = ent.baseDust * ent.efficiency * starMult;
 
-      const starMult = getStarMultiplier(entity.star);
-      const dustGain = entity.baseDust * entity.efficiency * starMult * cycles;
-
-      state.resources.dust += dustGain;
+      state.resources.dust += gain;
     }
   });
 }
+
 
 function renderJobs() {
   const container = document.getElementById("jobs-container");
