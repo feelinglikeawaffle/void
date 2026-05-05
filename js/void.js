@@ -1,6 +1,6 @@
 /* ============================
    VOID REACTOR SYSTEM
-   ============================ */
+   ============================= */
 
 /* Charge rate = baseRate + (entities * 0.05) */
 function getReactorChargeRate() {
