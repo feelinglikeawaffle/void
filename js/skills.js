@@ -1,59 +1,50 @@
 /* ============================
-   SKILLS LOGIC
+   SKILLS SYSTEM
    ============================ */
 
-if (!state.skills) {
-  state.skills = skillDefs.map(def => ({
-    id: def.id,
-    level: 0,
-    xp: 0,
-    unlocked: !!def.unlockedByDefault,
-    justLeveled: false
-  }));
-}
+/* Initialize skill state */
+function initSkills() {
+  state.skills = state.skills || {};
 
-function getSkillState(id) {
-  return state.skills.find(s => s.id === id);
-}
-
-function getSkillDef(id) {
-  return skillDefs.find(s => s.id === id);
-}
-
-function canUnlockSkill(def) {
-  if (!def.unlockReq) return true;
-
-  if (def.unlockReq.type === "resource") {
-    const res = def.unlockReq.resource;
-    const amt = def.unlockReq.amount;
-    return (state.resources[res] || 0) >= amt;
-  }
-
-  return false;
-}
-
-function tryUnlockSkills() {
   skillDefs.forEach(def => {
-    const skill = getSkillState(def.id);
-    if (!skill.unlocked && canUnlockSkill(def)) {
-      skill.unlocked = true;
+    if (!state.skills[def.id]) {
+      state.skills[def.id] = {
+        level: 0,
+        xp: 0,
+        unlocked: true,
+        justLeveled: false
+      };
     }
   });
 }
 
+/* XP needed for next level */
+function getSkillXpToLevel(level) {
+  return 10 * Math.pow(1.25, level);
+}
+
+/* Get skill state safely */
+function getSkillState(id) {
+  return state.skills[id];
+}
+
+/* Check unlocks (placeholder for future expansion) */
+function checkSkillUnlocks() {
+  // Add unlock logic later
+}
+
+/* Main skill tick */
 function tickSkills(dt) {
   const seconds = dt / 1000;
 
   for (const id in state.skills) {
-    const def = skillDefs[id];
-    if (!def) continue;
-
     const skill = state.skills[id];
+    if (!skill.unlocked) continue;
 
-    // XP gain
+    // Gain XP
     skill.xp += seconds;
 
-    const needed = def.baseXp * Math.pow(def.xpGrowth, skill.level);
+    const needed = getSkillXpToLevel(skill.level);
 
     if (skill.xp >= needed) {
       skill.xp -= needed;
@@ -63,9 +54,4 @@ function tickSkills(dt) {
       checkSkillUnlocks();
     }
   }
-}
-
-
-function getSkillXpToLevel(level) {
-  return 10 * Math.pow(1.5, level);
 }
