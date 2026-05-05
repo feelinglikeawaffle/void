@@ -21,15 +21,7 @@ function setupTabs() {
   });
 }
 
-/* ---------- Build UI ---------- */
-
-function buildUI() {
-  if (typeof buildShopUI === "function") {
-    buildShopUI();
-  }
-}
-
-/* ---------- Resource Bar ---------- */
+/* ---------- Sidebar Resources ---------- */
 
 function renderResources() {
   const r = state.resources;
@@ -45,8 +37,6 @@ function renderResources() {
     `;
   }
 }
-
-
 
 /* ---------- Skills ---------- */
 
@@ -118,34 +108,32 @@ function renderJobs() {
     const dustPerCycle = entity.baseDust * entity.efficiency * starMult;
     const progressPct = entity.progress * 100;
 
-div.innerHTML = `
-  <div class="entity-name">${entity.name}</div>
-  <div class="entity-stars" style="color:${starColor}">
-    ⭐ ${entity.star} Star
-  </div>
+    div.innerHTML = `
+      <div class="entity-name">${entity.name}</div>
+      <div class="entity-stars" style="color:${starColor}">
+        ⭐ ${entity.star} Star
+      </div>
 
-  <div class="entity-stats">
-    <div>Dust/Cycle: ${dustPerCycle.toFixed(1)}</div>
-    <div>Speed: ${entity.speed.toFixed(2)}</div>
-    <div>Efficiency: ${entity.efficiency.toFixed(2)}</div>
-    <div><b>Star‑Up Cost:</b> ${getStarUpCost(entity.star)} Dust</div>
-  </div>
+      <div class="entity-stats">
+        <div>Dust/Cycle: ${dustPerCycle.toFixed(1)}</div>
+        <div>Speed: ${entity.speed.toFixed(2)}</div>
+        <div>Efficiency: ${entity.efficiency.toFixed(2)}</div>
+        <div><b>Star‑Up Cost:</b> ${getStarUpCost(entity.star)} Dust</div>
+      </div>
 
-  <div class="entity-progress-bar">
-    <div class="entity-progress-fill" style="width:${progressPct}%;"></div>
-  </div>
+      <div class="entity-progress-bar">
+        <div class="entity-progress-fill" style="width:${progressPct}%;"></div>
+      </div>
 
-  <button class="star-btn" data-id="${entity.id}">Star Up</button>
-`;
-
+      <button class="star-btn" data-id="${entity.id}">Star Up</button>
+    `;
 
     container.appendChild(div);
   });
 
   document.querySelectorAll(".star-btn").forEach(btn => {
     btn.addEventListener("click", () => {
-      const id = btn.getAttribute("data-id");
-      starUpEntity(id);
+      starUpEntity(btn.getAttribute("data-id"));
     });
   });
 }
@@ -170,8 +158,8 @@ function renderHireMenu() {
       "#8b0000", "#ff0000", "#ff7f00", "#ffff00",
       "#00ff00", "#0000ff", "#8000ff", "#00008b"
     ];
-
     const starColor = starColors[ent.star];
+
     const hireCost = getHireCost(ent.star);
 
     container.innerHTML += `
@@ -201,31 +189,52 @@ function renderHireMenu() {
   });
 }
 
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const openBtn = document.getElementById("open-hire-menu");
-  const closeBtn = document.getElementById("close-hire-menu");
-
-  if (openBtn) openBtn.onclick = openHireMenu;
-  if (closeBtn) closeBtn.onclick = closeHireMenu;
-});
-
-/* ---------- Void ---------- */
+/* ---------- VOID REACTOR UI ---------- */
 
 function renderVoid() {
   const container = document.getElementById("void-actions");
   if (!container) return;
 
+  const r = state.voidReactor;
+  const pct = (r.charge / r.maxCharge) * 100;
+
   container.innerHTML = `
-    <div>Void: ${Math.round(state.resources.void)}</div>
+    <div class="reactor-card">
+      <div class="reactor-title">Void Reactor</div>
+
+      <div class="reactor-bar">
+        <div class="reactor-fill" style="width:${pct}%;"></div>
+      </div>
+
+      <div class="reactor-info">
+        Charge: ${r.charge.toFixed(1)} / ${r.maxCharge}<br>
+        Rate: ${getReactorChargeRate().toFixed(2)} / sec
+      </div>
+
+      <button id="reactor-discharge">Discharge</button>
+      <button id="reactor-overcharge">Overcharge</button>
+
+      <div id="reactor-msg" class="reactor-msg"></div>
+    </div>
   `;
-}
 
-/* ---------- Shop ---------- */
+  document.getElementById("reactor-discharge").onclick = () => {
+    dischargeReactor();
+    renderVoid();
+  };
 
-function renderShop() {
-  // Shop UI is static unless buying
+  document.getElementById("reactor-overcharge").onclick = () => {
+    const result = overchargeReactor();
+    const msg = document.getElementById("reactor-msg");
+
+    if (result.meltdown) {
+      msg.textContent = "⚠ Reactor Meltdown! Charge lost.";
+    } else {
+      msg.textContent = `Gained ${result.gain} Void`;
+    }
+
+    renderVoid();
+  };
 }
 
 /* ---------- Prestige ---------- */
@@ -247,6 +256,5 @@ function render(dt) {
   renderSkills();
   renderJobs();
   renderVoid();
-  renderShop();
   renderPrestige();
 }
