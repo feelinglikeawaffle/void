@@ -1,6 +1,6 @@
-/* =============================
-   TICK — Main Game Loop
-   ============================= */
+/* ============================
+   MAIN GAME LOOP
+   ============================ */
 
 let lastTime = performance.now();
 
@@ -9,16 +9,18 @@ function tick() {
   const dt = now - lastTime;
   lastTime = now;
 
+  // Core systems
   tickJobs(dt);
   tickSkills(dt);
-  tickVoid(dt);
   tickHireTimer(dt);
-  tickVoidReactor(dt);
+  tickVoidReactor(dt);   // <-- correct Void tick
 
+  // Render everything
   render(dt);
 
   requestAnimationFrame(tick);
 }
+
 
 function tickHireTimer(dt) {
   state.hire.timer -= dt / 1000;
