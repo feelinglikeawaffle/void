@@ -1,4 +1,4 @@
-/* =============================
+/* ============================
    GAME STATE
    ============================ */
 
@@ -11,6 +11,7 @@ const state = {
     eternal: 0
   },
 
+  /* Entities the player owns */
   entities: [],
 
   /* Hire pool */
@@ -18,6 +19,9 @@ const state = {
     pool: [],
     timer: 300 // 5 minutes
   },
+
+  /* Skills */
+  skills: {},
 
   /* Void Reactor */
   voidReactor: {
