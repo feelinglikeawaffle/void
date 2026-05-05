@@ -44,23 +44,27 @@ function tryUnlockSkills() {
 function tickSkills(dt) {
   const seconds = dt / 1000;
 
-  tryUnlockSkills();
+  for (const id in state.skills) {
+    const def = skillDefs[id];
+    if (!def) continue;
 
-  state.skills.forEach(skill => {
-    if (!skill.unlocked) return;
+    const skill = state.skills[id];
 
-    const def = getSkillDef(skill.id);
-    const xpGain = def.baseXpPerSecond * seconds * state.multipliers.skillXp;
-    skill.xp += xpGain;
+    // XP gain
+    skill.xp += seconds;
 
-    const needed = getSkillXpToLevel(skill.level);
+    const needed = def.baseXp * Math.pow(def.xpGrowth, skill.level);
+
     if (skill.xp >= needed) {
       skill.xp -= needed;
       skill.level++;
       skill.justLeveled = true;
+
+      checkSkillUnlocks();
     }
-  });
+  }
 }
+
 
 function getSkillXpToLevel(level) {
   return 10 * Math.pow(1.5, level);
